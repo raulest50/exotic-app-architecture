@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="exoticapparchitecture" version="4">
+  <OBJECT>
+    <ID name="exoticapparchitecture" mc="Standard.Package" uid="73a217ce-0eb6-40b6-9965-2471f0be3bee"/>
+    <PID name="ExoticAppArchitecture" mc="Standard.Project" uid="1a1a04dd-fc4d-4636-bc0c-81110ca3e88b"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[exoticapparchitecture]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

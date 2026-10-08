@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="Implementation" version="4">
+  <OBJECT>
+    <ID name="Implementation" mc="Archimate.ImplementationFolder" uid="cb5c0c07-61e4-4844-8bb5-9db200acbc19"/>
+    <PID name="Model" mc="Archimate.Model" uid="a39e875a-6d78-4d19-a166-57715383644d"/>
+    <ATTRIBUTES>
+      <ATT name="Name"><![CDATA[Implementation]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

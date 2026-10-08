@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="JiraProject" version="4">
+  <OBJECT>
+    <ID name="JiraProject" mc="Infrastructure.Stereotype" uid="5a6064cb-7f85-4f92-9c99-b0d84875325c"/>
+    <PID name="Integration" mc="Infrastructure.Profile" uid="bf80c771-3cf3-4c84-b978-b4523c73ced4"/>
+    <ATTRIBUTES>
+      <ATT name="Image"></ATT>
+      <ATT name="Icon"><![CDATA[res/icon/jiraproject.png]]></ATT>
+      <ATT name="IsHidden">true</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="LabelKey"><![CDATA[%stereotype.JiraProject.label]]></ATT>
+      <ATT name="BaseClassName"><![CDATA[Analyst.AnalystProject]]></ATT>
+      <ATT name="Name"><![CDATA[JiraProject]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

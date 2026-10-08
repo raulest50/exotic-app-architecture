@@ -1,0 +1,13 @@
+# Modelio: runtime state, session files and caches
+/.runtime/
+
+# Modelio: generated model indexes (including bundled libraries)
+/data/**/.index/
+
+# Operating system metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Keep project.conf and the remaining data/ contents under version control.
+# This includes model elements, diagram blobs, styles, metadata and libraries.
