@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<debug-info version="2">
+  <root nodeRef="r:436384fb-e97b-487f-9379-826737776648(cg.demo.stateMachine.sandbox)/3684742054970776421">
+    <file name="MPSComponentsWithErrors.xml">
+      <unit id="3684742054970776421" at="1,0,44,13" name="cg.demo.stateMachine.sandbox.MPSComponentsWithErrors" />
+    </file>
+  </root>
+  <root nodeRef="r:436384fb-e97b-487f-9379-826737776648(cg.demo.stateMachine.sandbox)/4074989001239457773">
+    <file name="MPSComponents.xml">
+      <unit id="4074989001239457773" at="1,0,43,13" name="cg.demo.stateMachine.sandbox.MPSComponents" />
+    </file>
+  </root>
+</debug-info>
+
