@@ -1,7 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <gaphor xmlns="https://gaphor.org/model" xmlns:Core="https://gaphor.org/modelinglanguage/Core" xmlns:UML="https://gaphor.org/modelinglanguage/UML" version="4" gaphor-version="3.3.2">
 <model>
-<Core:StyleSheet id="58d6989a-66f8-11ec-b4c8-0456e5e540ed"/>
+<Core:StyleSheet id="58d6989a-66f8-11ec-b4c8-0456e5e540ed">
+<styleSheet>
+<val>/* Nodos: título arriba a la izquierda */
+node compartment:first-child {
+    justify-content: start;
+}
+node name {
+    text-align: left;
+    vertical-align: top;
+}
+
+/* Packages: título arriba y centrado */
+package name {
+    text-align: center;
+    vertical-align: top;
+}
+
+/* Colores exclusivos de Despliegue */
+diagram[name="Despliegue"] node[name="render.com"] {
+    background-color: #1976D2;   /* azul */
+}
+
+diagram[name="Despliegue"] node[name="Backend - Spring"] {
+    background-color: #6DB33F;   /* verde spring */
+}
+
+diagram[name="Despliegue"] node[name="PostgresDatabase"] {
+    background-color: #C62828;   /* rojo */
+}
+
+diagram[name="Despliegue"] node[name="PC - usuario"] {
+    background-color: #9E9E9E;   /* gris */
+}
+
+diagram[name="Despliegue"] node[name="FrontEnd"] {
+    background-color: #FBC02D;   /* amarillo */
+    text-color: #212121;
+}</val>
+</styleSheet>
+</Core:StyleSheet>
 <UML:Package id="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed">
 <name>
 <val>Exotic-App</val>
@@ -9,11 +48,13 @@
 <nestedPackage>
 <reflist>
 <ref refid="49e30b84-c535-11f1-8d22-b81ea434d48d"/>
+<ref refid="722949e4-c5c8-11f1-aea3-b81ea434d48d"/>
 </reflist>
 </nestedPackage>
 <packagedElement>
 <reflist>
 <ref refid="49e30b84-c535-11f1-8d22-b81ea434d48d"/>
+<ref refid="722949e4-c5c8-11f1-aea3-b81ea434d48d"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -37,6 +78,7 @@
 <ownedType>
 <reflist>
 <ref refid="fac07e18-c536-11f1-8d22-b81ea434d48d"/>
+<ref refid="ea5f3352-c5c2-11f1-aea3-b81ea434d48d"/>
 </reflist>
 </ownedType>
 <owningPackage>
@@ -46,6 +88,7 @@
 <reflist>
 <ref refid="e5d01252-c536-11f1-8d22-b81ea434d48d"/>
 <ref refid="fac07e18-c536-11f1-8d22-b81ea434d48d"/>
+<ref refid="ea5f3352-c5c2-11f1-aea3-b81ea434d48d"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -64,6 +107,7 @@
 <ref refid="354d0944-c536-11f1-8d22-b81ea434d48d"/>
 <ref refid="8cfd47da-c536-11f1-8d22-b81ea434d48d"/>
 <ref refid="f6d2516e-c536-11f1-8d22-b81ea434d48d"/>
+<ref refid="e238bf90-c5c2-11f1-aea3-b81ea434d48d"/>
 </reflist>
 </ownedPresentation>
 </UML:DeploymentDiagram>
@@ -77,6 +121,9 @@
 <ref refid="1efbd8c2-c537-11f1-8d22-b81ea434d48d"/>
 </reflist>
 </nestedNode>
+<note>
+<val>Esta estructura: servicio web para backend, sitio estatico para frontend y base de datos postgres, esta replicada 2 veces: production y staging</val>
+</note>
 <owningPackage>
 <ref refid="e5d01252-c536-11f1-8d22-b81ea434d48d"/>
 </owningPackage>
@@ -91,16 +138,16 @@
 </UML:Node>
 <UML:NodeItem id="583ffcbe-c535-11f1-8d22-b81ea434d48d">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 103.67796325683594, 73.88565063476562)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 102.45614058260972, 92.84675721112954)</val>
 </matrix>
 <top-left>
-<val>(0.0, 0.0)</val>
+<val>(-109.4236720379121, 0.0)</val>
 </top-left>
 <width>
-<val>1072.2532746361735</val>
+<val>960.0654106642546</val>
 </width>
 <height>
-<val>459.5774018593128</val>
+<val>465.95847361978116</val>
 </height>
 <children>
 <reflist>
@@ -141,13 +188,13 @@
 <val>(1.0, 0.0, 0.0, 1.0, 126.79724420095076, 655.0794209390045)</val>
 </matrix>
 <top-left>
-<val>(0.0, 0.0)</val>
+<val>(-133.76477565625314, 0.0)</val>
 </top-left>
 <width>
-<val>568.1112901471024</val>
+<val>701.8760658033556</val>
 </width>
 <height>
-<val>323.5578412219937</val>
+<val>328.10794936112006</val>
 </height>
 <children>
 <reflist>
@@ -176,16 +223,16 @@
 </UML:Node>
 <UML:NodeItem id="8cfd47da-c536-11f1-8d22-b81ea434d48d">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 101.54381286371493, 104.37677002519654)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 98.70121761563978, 111.86610356443191)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
 </top-left>
 <width>
-<val>207.2493155402497</val>
+<val>210.55319973920376</val>
 </width>
 <height>
-<val>140.2148256564787</val>
+<val>132.29373310944607</val>
 </height>
 <diagram>
 <ref refid="5230413a-c535-11f1-8d22-b81ea434d48d"/>
@@ -204,6 +251,9 @@
 <node>
 <ref refid="583f61aa-c535-11f1-8d22-b81ea434d48d"/>
 </node>
+<note>
+<val>backend spring, se implementa en render mediante docker. tiene configurado almacenamiento persistente.</val>
+</note>
 <presentation>
 <reflist>
 <ref refid="9795d446-c536-11f1-8d22-b81ea434d48d"/>
@@ -242,8 +292,8 @@
 </nestingPackage>
 <ownedType>
 <reflist>
-<ref refid="354c6aca-c536-11f1-8d22-b81ea434d48d"/>
 <ref refid="583f61aa-c535-11f1-8d22-b81ea434d48d"/>
+<ref refid="354c6aca-c536-11f1-8d22-b81ea434d48d"/>
 </reflist>
 </ownedType>
 <owningPackage>
@@ -251,8 +301,8 @@
 </owningPackage>
 <packagedElement>
 <reflist>
-<ref refid="354c6aca-c536-11f1-8d22-b81ea434d48d"/>
 <ref refid="583f61aa-c535-11f1-8d22-b81ea434d48d"/>
+<ref refid="354c6aca-c536-11f1-8d22-b81ea434d48d"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -279,7 +329,7 @@
 <val>(1.0, 0.0, 0.0, 1.0, 280.90134653814795, 408.963698210824)</val>
 </matrix>
 <points>
-<val>[(-2.0506079994218567, 0.3604421924210328), (-0.771755749507804, 350.492492753377)]</val>
+<val>[(-3.272430673647989, 19.321548768784965), (-2.7887592806134194, 357.9818262926124)]</val>
 </points>
 <head-connection>
 <ref refid="9795d446-c536-11f1-8d22-b81ea434d48d"/>
@@ -296,7 +346,7 @@
 </reflist>
 </memberEnd>
 <name>
-<val>http</val>
+<val>HTTP</val>
 </name>
 <ownedEnd>
 <reflist>
@@ -353,7 +403,7 @@
 </UML:Node>
 <UML:NodeItem id="1efc3d58-c537-11f1-8d22-b81ea434d48d">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 742.6948760137025, 265.71745960098787)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 539.4645714000703, 274.13189593047207)</val>
 </matrix>
 <top-left>
 <val>(-91.95929401635817, -121.85751734266285)</val>
@@ -374,5 +424,166 @@
 <ref refid="1efbd8c2-c537-11f1-8d22-b81ea434d48d"/>
 </subject>
 </UML:NodeItem>
+<UML:AssociationItem id="e238bf90-c5c2-11f1-aea3-b81ea434d48d">
+<diagram>
+<ref refid="5230413a-c535-11f1-8d22-b81ea434d48d"/>
+</diagram>
+<head_subject>
+<ref refid="ea5f9cd4-c5c2-11f1-aea3-b81ea434d48d"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>False</val>
+</orthogonal>
+<subject>
+<ref refid="ea5f3352-c5c2-11f1-aea3-b81ea434d48d"/>
+</subject>
+<tail_subject>
+<ref refid="ea5fa7ba-c5c2-11f1-aea3-b81ea434d48d"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 364.7026355459549, 432.33855386914234)</val>
+</matrix>
+<points>
+<val>[(-15.615257340774974, -4.05330688953336), (-14.393434666548842, 61.08658915925787), (289.7092810342167, 61.08658915925787), (289.1533455403827, -15.359900727540719)]</val>
+</points>
+<head-connection>
+<ref refid="9795d446-c536-11f1-8d22-b81ea434d48d"/>
+</head-connection>
+<tail-connection>
+<ref refid="1efc3d58-c537-11f1-8d22-b81ea434d48d"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:Association id="ea5f3352-c5c2-11f1-aea3-b81ea434d48d">
+<memberEnd>
+<reflist>
+<ref refid="ea5f9cd4-c5c2-11f1-aea3-b81ea434d48d"/>
+<ref refid="ea5fa7ba-c5c2-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</memberEnd>
+<name>
+<val>SQLPostgreSQL - JDBC</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="ea5f9cd4-c5c2-11f1-aea3-b81ea434d48d"/>
+<ref refid="ea5fa7ba-c5c2-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="49e30b84-c535-11f1-8d22-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="49e30b84-c535-11f1-8d22-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="e238bf90-c5c2-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Association>
+<UML:Property id="ea5f9cd4-c5c2-11f1-aea3-b81ea434d48d">
+<association>
+<ref refid="ea5f3352-c5c2-11f1-aea3-b81ea434d48d"/>
+</association>
+<owningAssociation>
+<ref refid="ea5f3352-c5c2-11f1-aea3-b81ea434d48d"/>
+</owningAssociation>
+<type>
+<ref refid="97957bea-c536-11f1-8d22-b81ea434d48d"/>
+</type>
+</UML:Property>
+<UML:Property id="ea5fa7ba-c5c2-11f1-aea3-b81ea434d48d">
+<association>
+<ref refid="ea5f3352-c5c2-11f1-aea3-b81ea434d48d"/>
+</association>
+<owningAssociation>
+<ref refid="ea5f3352-c5c2-11f1-aea3-b81ea434d48d"/>
+</owningAssociation>
+<type>
+<ref refid="1efbd8c2-c537-11f1-8d22-b81ea434d48d"/>
+</type>
+</UML:Property>
+<UML:Package id="722949e4-c5c8-11f1-aea3-b81ea434d48d">
+<name>
+<val>Aplicacion</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="b1558d2a-c5c9-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</nestedPackage>
+<nestingPackage>
+<ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
+</nestingPackage>
+<ownedDiagram>
+<reflist>
+<ref refid="7d88dd4a-c5c8-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</ownedDiagram>
+<owningPackage>
+<ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="b1558d2a-c5c9-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:ComponentDiagram id="7d88dd4a-c5c8-11f1-aea3-b81ea434d48d">
+<element>
+<ref refid="722949e4-c5c8-11f1-aea3-b81ea434d48d"/>
+</element>
+<name>
+<val>Componentes</val>
+</name>
+</UML:ComponentDiagram>
+<UML:Package id="b1558d2a-c5c9-11f1-aea3-b81ea434d48d">
+<name>
+<val>Produccion</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</nestedPackage>
+<nestingPackage>
+<ref refid="722949e4-c5c8-11f1-aea3-b81ea434d48d"/>
+</nestingPackage>
+<owningPackage>
+<ref refid="722949e4-c5c8-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Package id="b66d9438-c5c9-11f1-aea3-b81ea434d48d">
+<name>
+<val>ConfParamsCategoria</val>
+</name>
+<nestingPackage>
+<ref refid="b1558d2a-c5c9-11f1-aea3-b81ea434d48d"/>
+</nestingPackage>
+<ownedDiagram>
+<reflist>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</ownedDiagram>
+<owningPackage>
+<ref refid="b1558d2a-c5c9-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+</UML:Package>
+<UML:ComponentDiagram id="5b086df4-c5d1-11f1-aea3-b81ea434d48d">
+<element>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</element>
+<name>
+<val>ConfParamsCategoria</val>
+</name>
+</UML:ComponentDiagram>
 </model>
 </gaphor>
