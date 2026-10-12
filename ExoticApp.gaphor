@@ -38,6 +38,20 @@ diagram[name="Despliegue"] node[name="PC - usuario"] {
 diagram[name="Despliegue"] node[name="FrontEnd"] {
     background-color: #FBC02D;   /* amarillo */
     text-color: #212121;
+}
+
+/* Todos los componentes: título arriba y centrado */
+component {
+    justify-content: start;
+}
+
+component compartment:first-child {
+    justify-content: start;
+}
+
+component name {
+    text-align: center;
+    vertical-align: top;
 }</val>
 </styleSheet>
 </Core:StyleSheet>
@@ -518,11 +532,6 @@ diagram[name="Despliegue"] node[name="FrontEnd"] {
 <nestingPackage>
 <ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
 </nestingPackage>
-<ownedDiagram>
-<reflist>
-<ref refid="7d88dd4a-c5c8-11f1-aea3-b81ea434d48d"/>
-</reflist>
-</ownedDiagram>
 <owningPackage>
 <ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
 </owningPackage>
@@ -532,14 +541,6 @@ diagram[name="Despliegue"] node[name="FrontEnd"] {
 </reflist>
 </packagedElement>
 </UML:Package>
-<UML:ComponentDiagram id="7d88dd4a-c5c8-11f1-aea3-b81ea434d48d">
-<element>
-<ref refid="722949e4-c5c8-11f1-aea3-b81ea434d48d"/>
-</element>
-<name>
-<val>Componentes</val>
-</name>
-</UML:ComponentDiagram>
 <UML:Package id="b1558d2a-c5c9-11f1-aea3-b81ea434d48d">
 <name>
 <val>Produccion</val>
@@ -565,6 +566,11 @@ diagram[name="Despliegue"] node[name="FrontEnd"] {
 <name>
 <val>ConfParamsCategoria</val>
 </name>
+<nestedPackage>
+<reflist>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</nestedPackage>
 <nestingPackage>
 <ref refid="b1558d2a-c5c9-11f1-aea3-b81ea434d48d"/>
 </nestingPackage>
@@ -573,9 +579,26 @@ diagram[name="Despliegue"] node[name="FrontEnd"] {
 <ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
 </reflist>
 </ownedDiagram>
+<ownedType>
+<reflist>
+<ref refid="50fcc47a-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
+<ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
+<ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</ownedType>
 <owningPackage>
 <ref refid="b1558d2a-c5c9-11f1-aea3-b81ea434d48d"/>
 </owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="50fcc47a-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
+<ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
+<ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</packagedElement>
 </UML:Package>
 <UML:ComponentDiagram id="5b086df4-c5d1-11f1-aea3-b81ea434d48d">
 <element>
@@ -584,6 +607,542 @@ diagram[name="Despliegue"] node[name="FrontEnd"] {
 <name>
 <val>ConfParamsCategoria</val>
 </name>
+<ownedPresentation>
+<reflist>
+<ref refid="39ec24ca-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="4263a4c0-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="c9760408-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="dafa0260-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="013e886a-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="191dc900-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="226d5b60-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="50fd1146-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="ce68e570-c681-11f1-aea3-b81ea434d48d"/>
+<ref refid="906664f4-c682-11f1-aea3-b81ea434d48d"/>
+<ref refid="988bd59c-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</ownedPresentation>
 </UML:ComponentDiagram>
+<UML:Artifact id="39ebd196-c5eb-11f1-aea3-b81ea434d48d">
+<name>
+<val>ConfParamsCategoria.tsx</val>
+</name>
+<owningPackage>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="39ec24ca-c5eb-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Artifact>
+<UML:ArtifactItem id="39ec24ca-c5eb-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 30.281387329101562, 284.06243896484375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>279.1490936279297</val>
+</width>
+<height>
+<val>176.56671142578125</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="39ebd196-c5eb-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ArtifactItem>
+<UML:Component id="42634c8c-c5eb-11f1-aea3-b81ea434d48d">
+<name>
+<val>RutaProcesoCatDesigner</val>
+</name>
+<owningPackage>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="4263a4c0-c5eb-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Component>
+<UML:ComponentItem id="4263a4c0-c5eb-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 534.1087872322906, 213.3722971945963)</val>
+</matrix>
+<top-left>
+<val>(-77.92120361328125, -76.54420471191406)</val>
+</top-left>
+<width>
+<val>1072.413527458004</val>
+</width>
+<height>
+<val>647.6021158158854</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="42634c8c-c5eb-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ComponentItem>
+<UML:Artifact id="c975a580-c5eb-11f1-aea3-b81ea434d48d">
+<name>
+<val>AreaOperativaNode.tsx</val>
+</name>
+<owningPackage>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="c9760408-c5eb-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Artifact>
+<UML:ArtifactItem id="c9760408-c5eb-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 834.3081014448444, 445.8351549487419)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>196.6991764963243</val>
+</width>
+<height>
+<val>72.13567371363177</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="c975a580-c5eb-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ArtifactItem>
+<UML:Artifact id="daf9b83c-c5eb-11f1-aea3-b81ea434d48d">
+<name>
+<val>AreaOperativaPicker.tsx</val>
+</name>
+<owningPackage>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="dafa0260-c5eb-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Artifact>
+<UML:ArtifactItem id="dafa0260-c5eb-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 832.5989678981546, 224.06243896484372)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>198.40831004301413</val>
+</width>
+<height>
+<val>60.0</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="daf9b83c-c5eb-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ArtifactItem>
+<UML:Artifact id="013e2a28-c5ec-11f1-aea3-b81ea434d48d">
+<name>
+<val>ProcesoProduccionRutaPicker.tsx</val>
+</name>
+<owningPackage>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="013e886a-c5ec-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Artifact>
+<UML:ArtifactItem id="013e886a-c5ec-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1071.9289662115507, 224.0624389648437)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>260.9999999999999</val>
+</width>
+<height>
+<val>60.0</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="013e2a28-c5ec-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ArtifactItem>
+<UML:Artifact id="191d6b90-c5ec-11f1-aea3-b81ea434d48d">
+<name>
+<val>types.ts</val>
+</name>
+<owningPackage>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="191dc900-c5ec-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Artifact>
+<UML:ArtifactItem id="191dc900-c5ec-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 520.5997999069904, 661.987043102608)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>100.0</val>
+</width>
+<height>
+<val>76.0</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="191d6b90-c5ec-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ArtifactItem>
+<UML:Artifact id="226d0476-c5ec-11f1-aea3-b81ea434d48d">
+<name>
+<val>rutaValidation.ts</val>
+</name>
+<owningPackage>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="226d5b60-c5ec-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Artifact>
+<UML:ArtifactItem id="226d5b60-c5ec-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1293.25702577966, 428.629150390625)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>144.0</val>
+</width>
+<height>
+<val>64.0</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="226d0476-c5ec-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ArtifactItem>
+<UML:Package id="39ac5272-c5ec-11f1-aea3-b81ea434d48d">
+<name>
+<val>elements</val>
+</name>
+<nestingPackage>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</nestingPackage>
+<ownedType>
+<reflist>
+<ref refid="c975a580-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="daf9b83c-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="39ebd196-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="013e2a28-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="42634c8c-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="226d0476-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="191d6b90-c5ec-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="c975a580-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="daf9b83c-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="39ebd196-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="013e2a28-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="42634c8c-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="226d0476-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="191d6b90-c5ec-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:Artifact id="50fcc47a-c5ec-11f1-aea3-b81ea434d48d">
+<name>
+<val>changeTracking.ts</val>
+</name>
+<owningPackage>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="50fd1146-c5ec-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Artifact>
+<UML:ArtifactItem id="50fd1146-c5ec-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1275.5850853477684, 342.28262028575455)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>179.34388086378237</val>
+</width>
+<height>
+<val>60.12634878395977</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="50fcc47a-c5ec-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ArtifactItem>
+<UML:Artifact id="ce67dcc0-c681-11f1-aea3-b81ea434d48d">
+<name>
+<val>RutaProcesoCatDesigner.tsx</val>
+</name>
+<owningPackage>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="ce68e570-c681-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Artifact>
+<UML:ArtifactItem id="ce68e570-c681-11f1-aea3-b81ea434d48d">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 834.3081014448442, 342.2826202857545)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>223.0</val>
+</width>
+<height>
+<val>64.0</val>
+</height>
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<subject>
+<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
+</subject>
+</UML:ArtifactItem>
+<UML:AssociationItem id="906664f4-c682-11f1-aea3-b81ea434d48d">
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<head_subject>
+<ref refid="9105fc30-c682-11f1-aea3-b81ea434d48d"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>False</val>
+</orthogonal>
+<subject>
+<ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
+</subject>
+<tail_subject>
+<ref refid="910623a4-c682-11f1-aea3-b81ea434d48d"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 903.675356004934, 283.90589018439573)</val>
+</matrix>
+<points>
+<val>[(1.1637778620864765, 0.15654878044799148), (1.1637778620867039, 58.3767301013587)]</val>
+</points>
+<head-connection>
+<ref refid="dafa0260-c5eb-11f1-aea3-b81ea434d48d"/>
+</head-connection>
+<tail-connection>
+<ref refid="ce68e570-c681-11f1-aea3-b81ea434d48d"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:Association id="910581c4-c682-11f1-aea3-b81ea434d48d">
+<memberEnd>
+<reflist>
+<ref refid="9105fc30-c682-11f1-aea3-b81ea434d48d"/>
+<ref refid="910623a4-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</memberEnd>
+<name>
+<val>props: states vals, callbacks</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="9105fc30-c682-11f1-aea3-b81ea434d48d"/>
+<ref refid="910623a4-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="906664f4-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Association>
+<UML:Property id="9105fc30-c682-11f1-aea3-b81ea434d48d">
+<association>
+<ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
+</association>
+<owningAssociation>
+<ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
+</owningAssociation>
+<type>
+<ref refid="daf9b83c-c5eb-11f1-aea3-b81ea434d48d"/>
+</type>
+</UML:Property>
+<UML:Property id="910623a4-c682-11f1-aea3-b81ea434d48d">
+<association>
+<ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
+</association>
+<owningAssociation>
+<ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
+</owningAssociation>
+<type>
+<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
+</type>
+</UML:Property>
+<UML:AssociationItem id="988bd59c-c682-11f1-aea3-b81ea434d48d">
+<diagram>
+<ref refid="5b086df4-c5d1-11f1-aea3-b81ea434d48d"/>
+</diagram>
+<head_subject>
+<ref refid="9970ef1a-c682-11f1-aea3-b81ea434d48d"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>False</val>
+</orthogonal>
+<subject>
+<ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
+</subject>
+<tail_subject>
+<ref refid="9970fc26-c682-11f1-aea3-b81ea434d48d"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1211.2625682698022, 317.6449303624592)</val>
+</matrix>
+<points>
+<val>[(-32.50687206017824, -33.582491397615456), (-32.50687206017824, 65.61220863010908), (-153.954466824958, 65.61220863010902)]</val>
+</points>
+<head-connection>
+<ref refid="013e886a-c5ec-11f1-aea3-b81ea434d48d"/>
+</head-connection>
+<tail-connection>
+<ref refid="ce68e570-c681-11f1-aea3-b81ea434d48d"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:Association id="99708034-c682-11f1-aea3-b81ea434d48d">
+<memberEnd>
+<reflist>
+<ref refid="9970ef1a-c682-11f1-aea3-b81ea434d48d"/>
+<ref refid="9970fc26-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</memberEnd>
+<name>
+<val>props: states vals, callbacks</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="9970ef1a-c682-11f1-aea3-b81ea434d48d"/>
+<ref refid="9970fc26-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</owningPackage>
+<package>
+<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="988bd59c-c682-11f1-aea3-b81ea434d48d"/>
+</reflist>
+</presentation>
+</UML:Association>
+<UML:Property id="9970ef1a-c682-11f1-aea3-b81ea434d48d">
+<association>
+<ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
+</association>
+<owningAssociation>
+<ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
+</owningAssociation>
+<type>
+<ref refid="013e2a28-c5ec-11f1-aea3-b81ea434d48d"/>
+</type>
+</UML:Property>
+<UML:Property id="9970fc26-c682-11f1-aea3-b81ea434d48d">
+<association>
+<ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
+</association>
+<owningAssociation>
+<ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
+</owningAssociation>
+<type>
+<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
+</type>
+</UML:Property>
 </model>
 </gaphor>
