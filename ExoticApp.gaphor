@@ -581,8 +581,6 @@ component name {
 </ownedDiagram>
 <ownedType>
 <reflist>
-<ref refid="50fcc47a-c5ec-11f1-aea3-b81ea434d48d"/>
-<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
 <ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
 <ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
 <ref refid="3208a1fe-c684-11f1-aea3-b81ea434d48d"/>
@@ -595,8 +593,6 @@ component name {
 <packagedElement>
 <reflist>
 <ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
-<ref refid="50fcc47a-c5ec-11f1-aea3-b81ea434d48d"/>
-<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
 <ref refid="910581c4-c682-11f1-aea3-b81ea434d48d"/>
 <ref refid="99708034-c682-11f1-aea3-b81ea434d48d"/>
 <ref refid="3208a1fe-c684-11f1-aea3-b81ea434d48d"/>
@@ -727,7 +723,7 @@ component name {
 <val>(0.0, 0.0)</val>
 </top-left>
 <width>
-<val>196.6991764963243</val>
+<val>212.0</val>
 </width>
 <height>
 <val>72.13567371363177</val>
@@ -763,7 +759,7 @@ component name {
 <val>(0.0, 0.0)</val>
 </top-left>
 <width>
-<val>198.40831004301413</val>
+<val>217.0</val>
 </width>
 <height>
 <val>60.0</val>
@@ -799,7 +795,7 @@ component name {
 <val>(0.0, 0.0)</val>
 </top-left>
 <width>
-<val>260.9999999999999</val>
+<val>291.0</val>
 </width>
 <height>
 <val>60.0</val>
@@ -859,12 +855,14 @@ component name {
 </nestingPackage>
 <ownedType>
 <reflist>
+<ref refid="39ebd196-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="42634c8c-c5eb-11f1-aea3-b81ea434d48d"/>
 <ref refid="c975a580-c5eb-11f1-aea3-b81ea434d48d"/>
 <ref refid="daf9b83c-c5eb-11f1-aea3-b81ea434d48d"/>
-<ref refid="39ebd196-c5eb-11f1-aea3-b81ea434d48d"/>
 <ref refid="013e2a28-c5ec-11f1-aea3-b81ea434d48d"/>
-<ref refid="42634c8c-c5eb-11f1-aea3-b81ea434d48d"/>
 <ref refid="191d6b90-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
+<ref refid="50fcc47a-c5ec-11f1-aea3-b81ea434d48d"/>
 </reflist>
 </ownedType>
 <owningPackage>
@@ -872,12 +870,14 @@ component name {
 </owningPackage>
 <packagedElement>
 <reflist>
+<ref refid="39ebd196-c5eb-11f1-aea3-b81ea434d48d"/>
+<ref refid="42634c8c-c5eb-11f1-aea3-b81ea434d48d"/>
 <ref refid="c975a580-c5eb-11f1-aea3-b81ea434d48d"/>
 <ref refid="daf9b83c-c5eb-11f1-aea3-b81ea434d48d"/>
-<ref refid="39ebd196-c5eb-11f1-aea3-b81ea434d48d"/>
 <ref refid="013e2a28-c5ec-11f1-aea3-b81ea434d48d"/>
-<ref refid="42634c8c-c5eb-11f1-aea3-b81ea434d48d"/>
 <ref refid="191d6b90-c5ec-11f1-aea3-b81ea434d48d"/>
+<ref refid="ce67dcc0-c681-11f1-aea3-b81ea434d48d"/>
+<ref refid="50fcc47a-c5ec-11f1-aea3-b81ea434d48d"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -901,10 +901,10 @@ component name {
 </val>
 </note>
 <owningPackage>
-<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
 </owningPackage>
 <package>
-<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
 </package>
 <presentation>
 <reflist>
@@ -920,7 +920,7 @@ component name {
 <val>(0.0, 0.0)</val>
 </top-left>
 <width>
-<val>253.0</val>
+<val>285.0</val>
 </width>
 <height>
 <val>60.12634878395977</val>
@@ -937,10 +937,10 @@ component name {
 <val>RutaProcesoCatDesigner.tsx</val>
 </name>
 <owningPackage>
-<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
 </owningPackage>
 <package>
-<ref refid="b66d9438-c5c9-11f1-aea3-b81ea434d48d"/>
+<ref refid="39ac5272-c5ec-11f1-aea3-b81ea434d48d"/>
 </package>
 <presentation>
 <reflist>
@@ -956,7 +956,7 @@ component name {
 <val>(0.0, 0.0)</val>
 </top-left>
 <width>
-<val>223.0</val>
+<val>250.0</val>
 </width>
 <height>
 <val>176.7436334526467</val>
@@ -1073,7 +1073,7 @@ component name {
 <val>(1.0, 0.0, 0.0, 1.0, 1211.2625682698022, 317.6449303624592)</val>
 </matrix>
 <points>
-<val>[(-32.50687206017824, -33.582491397615456), (-32.50687206017824, 65.61220863010908), (-153.954466824958, 65.61220863010908)]</val>
+<val>[(-32.50687206017824, -33.582491397615456), (-32.50687206017824, 65.61220863010908), (-126.95446682495799, 65.61220863010908)]</val>
 </points>
 <head-connection>
 <ref refid="013e886a-c5ec-11f1-aea3-b81ea434d48d"/>
@@ -1155,7 +1155,7 @@ component name {
 <val>(1.0, 0.0, 0.0, 1.0, 1217.7805985477112, 446.8545909357171)</val>
 </matrix>
 <points>
-<val>[(3.2186158533697835, 0.0), (-160.472497102867, 0.0)]</val>
+<val>[(3.2186158533697835, 0.0), (-133.472497102867, 0.0)]</val>
 </points>
 <head-connection>
 <ref refid="50fd1146-c5ec-11f1-aea3-b81ea434d48d"/>
@@ -1237,7 +1237,7 @@ component name {
 <val>(1.0, 0.0, 0.0, 1.0, 224.11928935892007, 474.46187431950153)</val>
 </matrix>
 <points>
-<val>[(-130.53535456473162, -1.1368683772161603e-13), (232.06829426008932, 0.43843589206278466)]</val>
+<val>[(-130.53535456473162, 0.0), (232.06829426008932, 0.43843589206278466)]</val>
 </points>
 <head-connection>
 <ref refid="39ec24ca-c5eb-11f1-aea3-b81ea434d48d"/>

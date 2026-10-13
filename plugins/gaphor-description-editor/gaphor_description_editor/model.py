@@ -1,0 +1,150 @@
+"""Persist documentation using standard UML profile/slot objects only."""
+
+from dataclasses import dataclass
+
+from gaphor import UML
+from gaphor.core import Transaction
+from gaphor.core.modeling import Presentation
+
+PROFILE = "DocumentacionArquitectura"
+STEREOTYPE = "Describible"
+PROPERTY = "descripcion"
+
+
+class DocumentationError(ValueError):
+    """A recoverable selection, stale editor, or profile conflict."""
+
+
+def target_element(element):
+    if isinstance(element, Presentation):
+        element = element.subject
+    # UML does not permit applying stereotypes to other stereotypes.
+    return element if isinstance(element, UML.Element) and not isinstance(element, UML.Stereotype) else None
+
+
+def _one(values, label):
+    values = list(values)
+    if len(values) > 1:
+        raise DocumentationError(f"Hay varios elementos para {label}. Corrige la duplicación antes de editar.")
+    return values[0] if values else None
+
+
+@dataclass(frozen=True)
+class Definition:
+    profile: object
+    stereotype: object
+    attribute: object
+
+
+def definition(model):
+    profile = _one((p for p in model.select(UML.Profile) if p.name == PROFILE), PROFILE)
+    stereotype = _one(
+        (s for s in model.select(UML.Stereotype) if s.package is profile and s.name == STEREOTYPE),
+        STEREOTYPE,
+    ) if profile else None
+    attribute = _one(
+        (p for p in stereotype.ownedAttribute if p.name == PROPERTY and not p.association),
+        PROPERTY,
+    ) if stereotype else None
+    return Definition(profile, stereotype, attribute)
+
+
+def _application(subject, stereotype):
+    return _one(
+        (a for a in subject.appliedStereotype if stereotype in a.classifier),
+        "la aplicación de Describible",
+    ) if stereotype else None
+
+
+def _slot(application, attribute):
+    return _one(
+        (s for s in application.slot if s.definingFeature is attribute),
+        "el valor de descripcion",
+    ) if application and attribute else None
+
+
+def read_description(subject):
+    spec = definition(subject.model)
+    slot = _slot(_application(subject, spec.stereotype), spec.attribute)
+    if slot and slot.value:
+        if not isinstance(slot.value, UML.LiteralString):
+            raise DocumentationError("descripcion contiene un valor que no es texto.")
+        return slot.value.value or ""
+    return ""
+
+
+def _ensure_definition(model):
+    spec = definition(model)
+    profile = spec.profile
+    if profile is None:
+        profile = model.create(UML.Profile)
+        profile.name = PROFILE
+    stereotype = spec.stereotype
+    if stereotype is None:
+        stereotype = model.create(UML.Stereotype)
+        stereotype.name = STEREOTYPE
+        stereotype.package = profile
+    metaclass = _one(
+        (c for c in profile.ownedType if type(c) is UML.Class and c.name == "Element"),
+        "la metaclase Element",
+    )
+    if metaclass is None:
+        metaclass = model.create(UML.Class)
+        metaclass.name = "Element"
+        metaclass.package = profile
+    extensions = [e for e in metaclass.extension if e.ownedEnd and e.ownedEnd.type is stereotype]
+    if not _one(extensions, "la extensión de Element"):
+        extension = UML.recipes.create_extension(metaclass, stereotype)
+        extension.package = profile
+    attribute = spec.attribute
+    if attribute is None:
+        attribute = model.create(UML.Property)
+        attribute.name = PROPERTY
+        stereotype.ownedAttribute = attribute
+    if attribute.type is None:
+        string = _one(
+            (t for t in profile.ownedType if isinstance(t, UML.PrimitiveType) and t.name == "String"),
+            "el tipo String",
+        )
+        if string is None:
+            string = model.create(UML.PrimitiveType)
+            string.name = "String"
+            string.package = profile
+        attribute.type = string
+    elif not isinstance(attribute.type, UML.PrimitiveType) or attribute.type.name != "String":
+        raise DocumentationError("La propiedad descripcion existente no tiene tipo String.")
+    return Definition(profile, stereotype, attribute)
+
+
+def save_documentation(subject, description, note, event_manager, expected=None):
+    """Commit both fields atomically; neither opening nor unchanged saves create data."""
+    if target_element(subject) is None:
+        raise DocumentationError("Selecciona un elemento UML compatible.")
+    try:
+        model = subject.model
+    except TypeError as error:
+        raise DocumentationError("El elemento ya no pertenece al modelo.") from error
+    if model.lookup(subject.id) is not subject:
+        raise DocumentationError("El elemento ya no pertenece al modelo.")
+    current = (read_description(subject), subject.note or "")
+    if expected is not None and current != expected:
+        raise DocumentationError("El contenido cambió mientras editabas. Copia tu texto y vuelve a abrir el editor.")
+    if current == (description, note):
+        return False
+    with Transaction(event_manager):
+        if description != current[0]:
+            spec = _ensure_definition(model)
+            instance = _application(subject, spec.stereotype)
+            if instance is None:
+                instance = UML.recipes.apply_stereotype(subject, spec.stereotype)
+            slot = _slot(instance, spec.attribute)
+            if slot is None:
+                slot = UML.recipes.add_slot(instance, spec.attribute)
+            if slot.value is None:
+                UML.recipes.set_slot_value(slot, description)
+            else:
+                # Reuse the literal, preserving identifiers across edits and Git diffs.
+                slot.value.value = description
+        if note != current[1]:
+            subject.note = note
+    return True
