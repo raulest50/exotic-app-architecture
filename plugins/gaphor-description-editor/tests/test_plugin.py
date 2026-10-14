@@ -24,7 +24,7 @@ from gaphor.ui.event import ModelSelectionChanged
 
 import gaphor_description_editor as plugin
 from gaphor_description_editor.model import (
-    DocumentationError, definition, read_description, save_documentation,
+    DocumentationError, definition, read_description, save_documentation, save_properties,
 )
 
 
@@ -205,7 +205,7 @@ class PluginTests(unittest.TestCase):
         output = os.environ.get("GAPHOR_DESCRIPTION_TEST_OUTPUT")
         if not output:
             self.skipTest("El runner proporciona la carpeta temporal")
-        save_documentation(self.component, "Descripción portátil\nLínea 2: ñ & <texto>", "Nota independiente", self.events)
+        save_properties(self.component, "Descripción portátil\nLínea 2: ñ & <texto>", "Nota independiente", "color: red;", self.events)
         with Transaction(self.events):
             diagram = self.model.create(UML.Diagram)
             diagram.name = "Prueba temporal del editor"

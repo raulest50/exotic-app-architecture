@@ -32,11 +32,11 @@ with (output / "installed-plugin.txt").open("w", encoding="utf-8") as report:
             from gaphor.ui.actiongroup import apply_shortcuts_from_entry_point, window_action_group
             from gaphor.ui.event import ModelSelectionChanged
             from gaphor_description_editor import DescriptionPropertyPage
-            from gaphor_description_editor.model import read_description
+            from gaphor_description_editor.model import read_description, read_css
 
             Gtk.init()
             native = textedit.instant_editor
-            assert distribution("gaphor-description-editor").version == "0.1.0"
+            assert distribution("gaphor-description-editor").version == "0.2.0"
             assert "description_editor" in load_entry_points("gaphor.services")
             first, second = Session(), Session()
             try:
@@ -54,15 +54,17 @@ with (output / "installed-plugin.txt").open("w", encoding="utf-8") as report:
                     events.handle(ModelSelectionChanged(None, component))
                     menu = session.get_service("tools_menu").menu
                     labels = list(menu_labels(menu))
-                    assert "Editar descripción" in labels, labels
+                    assert "Propiedades…" in labels, labels
                     group = window_action_group(session.component_registry)
                     assert group.has_action("edit-description")
                     group.activate_action("edit-description", None)
                     assert service.editor.subject is component
                     service.editor.description_buffer.set_text(f"Descripción {index}")
+                    service.editor.css_buffer.set_text("color: navy;")
                     assert service.editor.save()
                     assert read_description(component) == f"Descripción {index}"
                     assert component.note == f"Nota {index}"
+                    assert read_css(component) == "color: navy;"
                     page = DescriptionPropertyPage(component, events)
                     assert page.construct() is not None
                     assert page.preview.get_text() == f"Descripción {index}"

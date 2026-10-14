@@ -1,4 +1,4 @@
-"""Gaphor 3.3.2 session plugin: independent Description and Note editors."""
+"""Gaphor 3.3.2 properties: Description, Note and isolated per-element CSS."""
 
 import logging
 from importlib.metadata import version
@@ -14,7 +14,8 @@ from gaphor.diagram.propertypages import PropertyPageBase, PropertyPages
 from gaphor.diagram.tools import textedit
 from gaphor.ui.event import CurrentDiagramChanged, ModelSelectionChanged
 
-from .model import DocumentationError, read_description, save_documentation, target_element
+from .model import DocumentationError, read_css, read_description, save_documentation, save_properties, target_element
+from .styles import CssError, StyleRuntime
 
 log = logging.getLogger(__name__)
 SUPPORTED_VERSION = "3.3.2"
@@ -53,7 +54,7 @@ def _buffer_text(buffer):
 class DocumentationWindow(Gtk.Window):
     def __init__(self, parent, subject, event_manager, on_closed):
         super().__init__(
-            title=f"Descripción — {getattr(subject, 'name', '') or type(subject).__name__}",
+            title=f"Propiedades — {getattr(subject, 'name', '') or type(subject).__name__}",
             transient_for=parent,
             modal=True,
             resizable=True,
@@ -63,7 +64,7 @@ class DocumentationWindow(Gtk.Window):
         self.subject = subject
         self.event_manager = event_manager
         self.on_closed = on_closed
-        self.initial = (read_description(subject), subject.note or "")
+        self.initial = (read_description(subject), subject.note or "", read_css(subject))
         self.finished = False
 
         header = Gtk.HeaderBar()
@@ -87,7 +88,25 @@ class DocumentationWindow(Gtk.Window):
         self.paned.set_shrink_start_child(False)
         self.paned.set_shrink_end_child(False)
         self.paned.set_position(350)
-        layout.append(self.paned)
+        self.tabs = Gtk.Notebook(vexpand=True)
+        self.tabs.append_page(self.paned, Gtk.Label(label="Documentación"))
+        css_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        css_box.append(Gtk.Label(
+            label="Se aplica a este elemento en todos los diagramas. Las figuras internas conservan su propio estilo.",
+            xalign=0, wrap=True,
+        ))
+        css_field, self.css_buffer, self.css_view = self._field("Estilo CSS", self.initial[2], code=True)
+        css_box.append(css_field)
+        css_help = Gtk.Label(
+            label="Ejemplo: background-color: lightblue; color: navy; font-size: 14;\n"
+                  "Solo declaraciones, sin selectores ni llaves. Vacía el campo para recuperar el estilo normal.\n"
+                  "El texto CSS se conserva en el proyecto; su apariencia requiere este plugin.",
+            xalign=0, wrap=True, selectable=True,
+        )
+        css_help.add_css_class("dim-label")
+        css_box.append(css_help)
+        self.tabs.append_page(css_box, Gtk.Label(label="Estilo CSS"))
+        layout.append(self.tabs)
         hint = Gtk.Label(label="Los cambios se incorporan al modelo. Guarda después el proyecto como de costumbre.", xalign=0, wrap=True)
         hint.add_css_class("dim-label")
         layout.append(hint)
@@ -102,20 +121,21 @@ class DocumentationWindow(Gtk.Window):
         self.add_controller(keys)
 
     @staticmethod
-    def _field(title, text):
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+    def _field(title, text, code=False):
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8, vexpand=True)
         label = Gtk.Label(label=title, xalign=0)
         label.add_css_class("heading")
         box.append(label)
         buffer = Gtk.TextBuffer()
         buffer.set_text(text)
         view = Gtk.TextView(
-            buffer=buffer, wrap_mode=Gtk.WrapMode.WORD_CHAR,
+            buffer=buffer, wrap_mode=Gtk.WrapMode.NONE if code else Gtk.WrapMode.WORD_CHAR,
+            monospace=code,
             top_margin=12, bottom_margin=12, left_margin=12, right_margin=12,
         )
         label.set_mnemonic_widget(view)
         scroll = Gtk.ScrolledWindow(vexpand=True, min_content_height=100)
-        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC if code else Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroll.set_child(view)
         frame = Gtk.Frame(child=scroll)
         box.append(frame)
@@ -123,16 +143,19 @@ class DocumentationWindow(Gtk.Window):
 
     def save(self):
         try:
-            save_documentation(
+            save_properties(
                 self.subject, _buffer_text(self.description_buffer),
-                _buffer_text(self.note_buffer), self.event_manager, expected=self.initial,
+                _buffer_text(self.note_buffer), _buffer_text(self.css_buffer),
+                self.event_manager, expected=self.initial,
             )
         except DocumentationError as error:
+            if isinstance(error, CssError):
+                self.tabs.set_current_page(1)
             self.error.set_text(str(error))
             self.error.set_visible(True)
             return False
         except Exception:
-            log.exception("No se pudo guardar la documentación")
+            log.exception("No se pudieron guardar las propiedades")
             self.error.set_text("No se pudo guardar. Conserva tu texto y consulta el registro de Gaphor.")
             self.error.set_visible(True)
             return False
@@ -166,6 +189,7 @@ class DescriptionEditor(Service, ActionProvider):
         self.focused = None
         self.editor = None
         self.compatible = version("gaphor") == SUPPORTED_VERSION
+        self.style_runtime = None
         tools_menu.add_actions(self)
         event_manager.subscribe(self._diagram_selection)
         event_manager.subscribe(self._model_selection)
@@ -173,6 +197,7 @@ class DescriptionEditor(Service, ActionProvider):
         if self.compatible:
             _services[event_manager] = self
             _install_hook()
+            self.style_runtime = StyleRuntime(element_factory, event_manager)
 
     @event_handler(DiagramSelectionChanged)
     def _diagram_selection(self, event):
@@ -186,7 +211,7 @@ class DescriptionEditor(Service, ActionProvider):
     def _reset_selection(self, _event):
         self.focused = None
 
-    @action(name="edit-description", label="Editar descripción", shortcut="<Control><Alt>d")
+    @action(name="edit-description", label="Propiedades…", shortcut="<Control><Alt>d")
     def edit_description(self):
         self.open_element(self.focused)
 
@@ -221,7 +246,7 @@ class DescriptionEditor(Service, ActionProvider):
         dialog = Gtk.MessageDialog(
             transient_for=self.main_window.window, modal=True,
             message_type=Gtk.MessageType.INFO, buttons=Gtk.ButtonsType.CLOSE,
-            text="Editor de descripción", secondary_text=message,
+            text="Propiedades", secondary_text=message,
         )
         dialog.connect("response", lambda widget, _response: widget.destroy())
         dialog.present()
@@ -234,6 +259,8 @@ class DescriptionEditor(Service, ActionProvider):
         self.event_manager.unsubscribe(self._reset_selection)
         _services.pop(self.event_manager, None)
         _remove_hook()
+        if self.style_runtime:
+            self.style_runtime.shutdown()
         self.tools_menu.remove_actions(self)
 
 
@@ -258,7 +285,7 @@ class DescriptionPropertyPage(PropertyPageBase):
         box.append(label)
         self.preview = Gtk.Label(xalign=0, wrap=True, lines=3, max_width_chars=32, ellipsize=Pango.EllipsizeMode.END)
         box.append(self.preview)
-        button = Gtk.Button(label="Editar descripción…")
+        button = Gtk.Button(label="Propiedades…")
         button.connect("clicked", self._open)
         box.append(button)
         self.watcher = self.subject.watcher()

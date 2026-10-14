@@ -50,7 +50,7 @@ with (output / "installed-plugin.txt").open("w", encoding="utf-8") as report:
                         entries = list(menu_entries(session.get_service("tools_menu").menu))
                         assert sum(label == "Custom tools" for label, _ in entries) == 1
                         assert ("Importar/leer componente en crudo…", "win.import-raw-component") in entries
-                        assert ("Editar descripción", "win.edit-description") in entries
+                        assert ("Propiedades…", "win.edit-description") in entries
                         model = session.get_service("element_factory")
                         events = session.get_service("event_manager")
                         with Transaction(events):
