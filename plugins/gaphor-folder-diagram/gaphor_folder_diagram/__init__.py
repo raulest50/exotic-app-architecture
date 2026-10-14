@@ -46,7 +46,9 @@ class FolderDiagramService(Service, ActionProvider):
 
     @event_handler(DiagramSelectionChanged)
     def _diagram_selection(self, event):
-        self.focused = event.focused_item or event.diagram
+        self.focused = event.focused_item
+        if self.focused is None:
+            self.focused = getattr(event.diagram_view, "model", None)
 
     @event_handler(CurrentDiagramChanged)
     def _diagram_changed(self, event):

@@ -1,11 +1,14 @@
 """Exercise entry points, session services, menu, accelerators and save after installation."""
 
 import contextlib
-from importlib.metadata import distribution
+from importlib.metadata import distributions
 import logging
 import os
 from pathlib import Path
 import traceback
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 output = Path(os.environ["GAPHOR_DESCRIPTION_TEST_OUTPUT"])
 
@@ -33,10 +36,16 @@ with (output / "installed-plugin.txt").open("w", encoding="utf-8") as report:
             from gaphor.ui.event import ModelSelectionChanged
             from gaphor_description_editor import DescriptionPropertyPage
             from gaphor_description_editor.model import read_description, read_css
+            from navigation_integration import verify_navigation
 
             Gtk.init()
             native = textedit.instant_editor
-            assert distribution("gaphor-description-editor").version == "0.2.0"
+            installed = list(distributions())
+            for name, expected in (("gaphor-description-editor", "0.3.0"),
+                                   ("gaphor-folder-diagram", "0.1.1")):
+                matches = [d for d in installed if d.metadata["Name"] == name]
+                assert len(matches) == 1, (name, [d.version for d in matches])
+                assert matches[0].version == expected
             assert "description_editor" in load_entry_points("gaphor.services")
             first, second = Session(), Session()
             try:
@@ -72,11 +81,12 @@ with (output / "installed-plugin.txt").open("w", encoding="utf-8") as report:
                 app = Gtk.Application(application_id="org.gaphor.DescriptionEditorTests")
                 apply_shortcuts_from_entry_point("gaphor.services", "win", app)
                 assert app.get_accels_for_action("win.edit-description") == ["<Control><Alt>d"]
+                verify_navigation((first, second))
             finally:
                 first.shutdown()
                 second.shutdown()
             assert textedit.instant_editor is native
-            report.write("PASS: instalación detectada; menú, Ctrl+Alt+D, panel, guardado y dos sesiones independientes.\n")
+            report.write("PASS: 0.3.0 sin duplicados; menú, Ctrl+Alt+D, panel, guardado, navegación nativa y dos sesiones con importador 0.1.1.\n")
             (output / "installed-plugin-status.txt").write_text("PASS", encoding="utf-8")
     except Exception:
         traceback.print_exc(file=report)

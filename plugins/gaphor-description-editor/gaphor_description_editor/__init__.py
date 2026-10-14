@@ -1,4 +1,4 @@
-"""Gaphor 3.3.2 properties: Description, Note and isolated per-element CSS."""
+"""Gaphor 3.3.2 properties: documentation, child diagrams and per-element CSS."""
 
 import logging
 from importlib.metadata import version
@@ -9,13 +9,14 @@ from gaphor import UML
 from gaphor.abc import ActionProvider, Service
 from gaphor.core import action, event_handler
 from gaphor.core.modeling.event import ModelReady
-from gaphor.diagram.event import DiagramSelectionChanged
+from gaphor.diagram.event import DiagramOpened, DiagramSelectionChanged
 from gaphor.diagram.propertypages import PropertyPageBase, PropertyPages
 from gaphor.diagram.tools import textedit
 from gaphor.ui.event import CurrentDiagramChanged, ModelSelectionChanged
 
 from .model import DocumentationError, read_css, read_description, save_documentation, save_properties, target_element
 from .styles import CssError, StyleRuntime
+from .diagrams import DiagramList
 
 log = logging.getLogger(__name__)
 SUPPORTED_VERSION = "3.3.2"
@@ -62,10 +63,12 @@ class DocumentationWindow(Gtk.Window):
             default_height=650,
         )
         self.subject = subject
+        self.model = subject.model
         self.event_manager = event_manager
         self.on_closed = on_closed
         self.initial = (read_description(subject), subject.note or "", read_css(subject))
         self.finished = False
+        self.confirmation = None
 
         header = Gtk.HeaderBar()
         cancel = Gtk.Button(label="Cancelar")
@@ -90,7 +93,10 @@ class DocumentationWindow(Gtk.Window):
         self.paned.set_position(350)
         self.tabs = Gtk.Notebook(vexpand=True)
         self.tabs.append_page(self.paned, Gtk.Label(label="Documentación"))
+        self.diagrams_page = DiagramList(subject, self.open_child_diagram)
+        self.tabs.append_page(self.diagrams_page, Gtk.Label(label="Diagramas"))
         css_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        self.css_page = css_box
         css_box.append(Gtk.Label(
             label="Se aplica a este elemento en todos los diagramas. Las figuras internas conservan su propio estilo.",
             xalign=0, wrap=True,
@@ -106,6 +112,7 @@ class DocumentationWindow(Gtk.Window):
         css_help.add_css_class("dim-label")
         css_box.append(css_help)
         self.tabs.append_page(css_box, Gtk.Label(label="Estilo CSS"))
+        self.tabs.connect("switch-page", self._switch_page)
         layout.append(self.tabs)
         hint = Gtk.Label(label="Los cambios se incorporan al modelo. Guarda después el proyecto como de costumbre.", xalign=0, wrap=True)
         hint.add_css_class("dim-label")
@@ -141,30 +148,129 @@ class DocumentationWindow(Gtk.Window):
         box.append(frame)
         return box, buffer, view
 
-    def save(self):
+    def _values(self):
+        return tuple(_buffer_text(buffer) for buffer in
+                     (self.description_buffer, self.note_buffer, self.css_buffer))
+
+    def _show_error(self, message):
+        self.error.set_text(message)
+        self.error.set_visible(True)
+
+    def _save_fields(self):
         try:
             save_properties(
-                self.subject, _buffer_text(self.description_buffer),
-                _buffer_text(self.note_buffer), _buffer_text(self.css_buffer),
+                self.subject, *self._values(),
                 self.event_manager, expected=self.initial,
             )
         except DocumentationError as error:
             if isinstance(error, CssError):
-                self.tabs.set_current_page(1)
-            self.error.set_text(str(error))
-            self.error.set_visible(True)
+                self.tabs.set_current_page(self.tabs.page_num(self.css_page))
+            self._show_error(str(error))
             return False
         except Exception:
             log.exception("No se pudieron guardar las propiedades")
-            self.error.set_text("No se pudo guardar. Conserva tu texto y consulta el registro de Gaphor.")
-            self.error.set_visible(True)
+            self._show_error("No se pudo guardar. Conserva tu texto y consulta el registro de Gaphor.")
+            return False
+        self.initial = self._values()
+        return True
+
+    def save(self):
+        if self.finished or not self._save_fields():
             return False
         self.cancel()
+        return True
+
+    def _switch_page(self, _tabs, page, _number):
+        if page is self.diagrams_page:
+            self.diagrams_page.refresh()
+
+    def _valid_diagram(self, diagram):
+        if self.finished:
+            return False
+        if (self.model.lookup(self.subject.id) is not self.subject
+                or not isinstance(diagram, UML.Diagram)
+                or self.model.lookup(diagram.id) is not diagram
+                or diagram.element is not self.subject):
+            self._show_error("El diagrama fue eliminado o ya no pertenece directamente a este elemento.")
+            self.diagrams_page.refresh()
+            return False
+        return True
+
+    def open_child_diagram(self, diagram):
+        if not self._valid_diagram(diagram):
+            return False
+        if self.confirmation:
+            self.confirmation.present()
+            return False
+        if self._values() == self.initial:
+            return self._navigate(diagram)
+        dialog = Gtk.MessageDialog(
+            transient_for=self, modal=True, message_type=Gtk.MessageType.QUESTION,
+            text="¿Guardar los cambios antes de abrir el diagrama?",
+            secondary_text="Los cambios se incorporarán al modelo. El archivo se guarda después con Ctrl+S.",
+        )
+        dialog.add_buttons("Cancelar", Gtk.ResponseType.CANCEL,
+                           "Descartar", Gtk.ResponseType.REJECT,
+                           "Guardar", Gtk.ResponseType.ACCEPT)
+        dialog.set_default_response(Gtk.ResponseType.CANCEL)
+        self.confirmation = dialog
+        dialog.connect("response", self._navigation_response, diagram)
+        dialog.connect("close-request", self._confirmation_closed)
+        keys = Gtk.EventControllerKey.new()
+        keys.connect("key-pressed", self._confirmation_key_pressed)
+        dialog.add_controller(keys)
+        dialog.present()
+        return False
+
+    def _confirmation_closed(self, dialog):
+        dialog.response(Gtk.ResponseType.CANCEL)
+        return True
+
+    def _confirmation_key_pressed(self, _controller, keyval, _keycode, _state):
+        if keyval == Gdk.KEY_Escape:
+            if self.confirmation:
+                self.confirmation.response(Gtk.ResponseType.CANCEL)
+            return True
+        return False
+
+    def _navigation_response(self, dialog, response, diagram):
+        if self.confirmation is not dialog:
+            return
+        self.confirmation = None
+        dialog.destroy()
+        if response in (Gtk.ResponseType.ACCEPT, Gtk.ResponseType.REJECT):
+            self._navigate(diagram, save=response == Gtk.ResponseType.ACCEPT)
+
+    def _navigate(self, diagram, save=False):
+        if not self._valid_diagram(diagram):
+            return False
+        if save and not self._save_fields():
+            return False
+        # Saving emits model events: recheck ownership before closing the editor.
+        if not self._valid_diagram(diagram):
+            return False
+        parent = self.get_transient_for()
+        self.cancel()
+        try:
+            self.event_manager.handle(DiagramOpened(diagram))
+        except Exception:
+            log.exception("No se pudo abrir el diagrama hijo")
+            dialog = Gtk.MessageDialog(
+                transient_for=parent, modal=True, message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.CLOSE, text="No se pudo abrir el diagrama.",
+                secondary_text="Puedes intentar abrirlo desde el árbol de Gaphor.",
+            )
+            dialog.connect("response", lambda widget, _response: widget.destroy())
+            dialog.present()
+            return False
         return True
 
     def cancel(self):
         if not self.finished:
             self.finished = True
+            if self.confirmation:
+                dialog, self.confirmation = self.confirmation, None
+                dialog.destroy()
             self.on_closed(self)
             self.destroy()
 
@@ -174,6 +280,9 @@ class DocumentationWindow(Gtk.Window):
 
     def _key_pressed(self, _controller, keyval, _keycode, _state):
         if keyval == Gdk.KEY_Escape:
+            if self.confirmation:
+                self.confirmation.response(Gtk.ResponseType.CANCEL)
+                return True
             self.cancel()
             return True
         return False

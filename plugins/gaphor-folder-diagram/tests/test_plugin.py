@@ -2,6 +2,7 @@ import io
 import os
 from pathlib import Path
 import stat
+import sys
 import tempfile
 from threading import Event
 import time
@@ -21,7 +22,8 @@ from gaphor.services.undomanager import UndoManager
 from gaphor.storage.load import load
 from gaphor.storage.save import save
 from gaphor.diagram.export import save_png
-from gaphor.ui.event import ModelSelectionChanged
+from gaphor.diagram.event import DiagramSelectionChanged
+from gaphor.ui.event import CurrentDiagramChanged, ModelSelectionChanged
 from gaphor.ui.menufragment import MenuFragment
 
 from gaphor_folder_diagram import FolderDiagramService
@@ -81,6 +83,18 @@ class PluginTests(unittest.TestCase):
         self.assertFalse(window.worker.is_alive())
         drain()
         self.assertIsNotNone(window.snapshot, window.summary.get_text())
+
+    def selection_service(self):
+        service = FolderDiagramService(SimpleNamespace(window=None), MenuFragment(),
+                                       self.events, self.model, Mock())
+        self.services.append(service)
+        return service
+
+    def assert_import_destination(self, service, destination):
+        with patch("gaphor_folder_diagram.ImportWindow") as window:
+            service.import_raw_component()
+            self.assertIs(window.call_args.args[3], destination)
+            service.window = None
 
     def test_five_files_two_directories_and_no_contents_read(self):
         with patch("builtins.open", side_effect=AssertionError("No content reads")):
@@ -352,6 +366,76 @@ class PluginTests(unittest.TestCase):
         self.services.remove(services[0])
         self.assertEqual(menus[0].menu.get_n_items(), 0)
         self.assertEqual(menus[1].menu.get_n_items(), 1)
+
+    def test_empty_diagram_selection_uses_view_model_as_destination(self):
+        capture = self.capture()
+        service = self.selection_service()
+        event = DiagramSelectionChanged(SimpleNamespace(model=capture.diagram), None, set())
+        self.events.handle(event)
+        self.assertIs(service.focused, capture.diagram)
+        self.assert_import_destination(service, capture.package)
+
+    def test_focused_figure_takes_priority_over_diagram_destination(self):
+        capture = self.capture()
+        service = self.selection_service()
+        item = next(i for i in capture.diagram.get_all_items()
+                    if i.subject.name == "archivo4.ts")
+        view = SimpleNamespace(model=capture.diagram)
+        for source in (view, None):
+            with self.subTest(view=source):
+                self.events.handle(DiagramSelectionChanged(source, item, {item}))
+                self.assertIs(service.focused, item)
+                self.assert_import_destination(service, item.subject.package)
+
+    def test_missing_view_or_diagram_clears_stale_selection_to_root(self):
+        capture = self.capture()
+        service = self.selection_service()
+        for view in (None, SimpleNamespace(model=None), SimpleNamespace()):
+            with self.subTest(view=view):
+                self.events.handle(ModelSelectionChanged(None, capture.package))
+                self.events.handle(DiagramSelectionChanged(view, None, set()))
+                self.assertIsNone(service.focused)
+                self.assert_import_destination(service, None)
+
+    def test_diagram_switch_and_close_update_import_destination(self):
+        first, second = self.capture(), self.capture()
+        service = self.selection_service()
+        for capture in (first, second, first):
+            self.events.handle(CurrentDiagramChanged(capture.diagram))
+            self.assert_import_destination(service, capture.package)
+            self.events.handle(DiagramSelectionChanged(
+                SimpleNamespace(model=capture.diagram), None, set()))
+            self.assertIs(service.focused, capture.diagram)
+            self.assert_import_destination(service, capture.package)
+        self.events.handle(CurrentDiagramChanged(None))
+        self.assert_import_destination(service, None)
+
+    def test_native_zoom_css_refresh_and_two_projects_with_both_source_plugins(self):
+        # Source integration before installation; the runner disables installed plugins.
+        from gaphor.application import Session
+        from gaphor.entrypoint import load_entry_points
+        description_source = Path(__file__).resolve().parents[2] / "gaphor-description-editor"
+        sys.path.insert(0, str(description_source))
+        from gaphor_description_editor import DescriptionEditor
+        from zoom_integration import assert_style_isolation, exercise_zoom
+        sessions = []
+        try:
+            results = []
+            services = dict(load_entry_points("gaphor.services"))
+            services.update(folder_diagram=FolderDiagramService, description_editor=DescriptionEditor)
+            for css in ("color: navy;", "color: maroon;"):
+                session = Session(services=services)
+                sessions.append(session)
+                main_window = session.get_service("main_window")
+                main_window.window = Gtk.Window()
+                capture = create_capture(session.get_service("element_factory"),
+                                         session.get_service("event_manager"), scan_folder(self.root))
+                results.append(exercise_zoom(session, capture, css))
+            assert_style_isolation(*results)
+        finally:
+            for session in sessions:
+                session.shutdown()
+            sys.path.remove(str(description_source))
 
     def test_write_portable_fixture_and_render(self):
         output = os.environ.get("GAPHOR_FOLDER_TEST_OUTPUT")

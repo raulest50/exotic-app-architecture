@@ -23,6 +23,11 @@ Se instala únicamente el plugin en `~/.local/gaphor/plugins-2`. El instalador
 usa una copia temporal para empaquetarlo, sin descargar dependencias ni
 modificar las fuentes o la instalación de Gaphor. No requiere `sudo`.
 Para actualizarlo después de un pull, repite el comando y reinicia Gaphor.
+La versión **0.3.0** está pendiente de ejecución en Linux. Tras instalarla
+correctamente, retira solo los metadatos antiguos de este plugin
+(`gaphor_description_editor-0.1.0.dist-info` y
+`gaphor_description_editor-0.2.0.dist-info`, si existen). Conserva el directorio
+`gaphor_description_editor-0.3.0.dist-info` y los demás plugins.
 
 Opciones para otra instalación nativa o carpeta de plugins:
 
@@ -34,8 +39,8 @@ GAPHOR_PLUGIN_PATH=/ruta/a/plugins bash install.sh
 También existe `--plugin-directory /ruta/a/plugins`. Si cambias el destino,
 usa ese mismo `GAPHOR_PLUGIN_PATH` al iniciar Gaphor y al ejecutar las pruebas.
 
-Tras reiniciar Gaphor, selecciona un elemento UML y usa **Tools → Editar
-descripción**, **Ctrl+Alt+D** o doble clic en su figura. Guarda los campos y
+Tras reiniciar Gaphor, selecciona un elemento UML y usa **Tools → Propiedades…**,
+**Ctrl+Alt+D** o doble clic en su figura. Guarda los campos y
 después el proyecto con **Ctrl+S**. Consulta [README.md](README.md) para los
 detalles del editor y del almacenamiento UML compartido entre plataformas.
 
@@ -53,14 +58,17 @@ bash test.sh --installed --headless --gaphor /usr/bin/gaphor
 ```
 
 Sin `DISPLAY` ni `WAYLAND_DISPLAY` se usa automáticamente una pantalla virtual.
-Cada proceso tiene un límite de 30 segundos. Las pruebas reutilizan los cuatro
-archivos Python existentes y comprueban sus informes de estado además de la
+Cada proceso tiene un límite de 30 segundos. Las pruebas reutilizan los
+archivos Python de Windows y comprueban sus informes de estado además de la
 salida del proceso. Los resultados y modelos temporales se conservan en la
 carpeta indicada al comenzar; no se abre ni modifica `ExoticApp.gaphor`.
 
 La integración comprueba la carga del plugin, menú, acelerador, panel, guardado
 y aislamiento entre dos sesiones. La pantalla virtual permite comprobar GTK,
 pero no sustituye la comprobación visual y de atajos en el escritorio real.
+La integración de 0.3.0 requiere también el importador 0.1.1: su código fuente
+en la carpeta vecina `gaphor-folder-diagram` y, con `--installed`, ambos plugins
+instalados sin metadatos duplicados.
 
 Verificado el **14 de octubre de 2026** en Kali Linux con Gaphor **3.3.2** y
 Python **3.14.6**: instalación local del paquete **0.1.0**, **19 pruebas
@@ -71,6 +79,6 @@ ejecutó fuera del sandbox de Codex, que restringía el acceso a la pantalla vir
 ## Desactivar
 
 Con Gaphor cerrado, mueve fuera de su carpeta de plugins los directorios
-`gaphor_description_editor` y `gaphor_description_editor-0.1.0.dist-info`.
+`gaphor_description_editor` y `gaphor_description_editor-0.3.0.dist-info`.
 Las descripciones permanecen en el modelo y se pueden consultar mediante
 las propiedades nativas del estereotipo `Describible`.

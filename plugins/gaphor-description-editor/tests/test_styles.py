@@ -102,7 +102,7 @@ class StyleTests(unittest.TestCase):
         window.css_buffer.set_text("color: wrong;")
         self.assertFalse(window.save())
         self.assertFalse(window.finished)
-        self.assertEqual(window.tabs.get_current_page(), 1)
+        self.assertEqual(window.tabs.get_current_page(), window.tabs.page_num(window.css_page))
         self.assertEqual(self.model.size(), before)
         self.assertEqual(self.component.note, "Nota original áéíóú")
 
@@ -112,7 +112,7 @@ class StyleTests(unittest.TestCase):
         before = self.style(item)["color"]
         window = self.window()
         self.assertTrue(window.get_title().startswith("Propiedades —"))
-        self.assertEqual(window.tabs.get_n_pages(), 2)
+        self.assertEqual(window.tabs.get_n_pages(), 3)
         self.assertTrue(window.css_view.get_monospace())
         window.css_buffer.set_text("color: red;")
         self.assertEqual(self.style(item)["color"], before)

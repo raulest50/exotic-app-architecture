@@ -1,11 +1,15 @@
 """Integration with both installed plugins, menus and independent sessions."""
 
 import contextlib
+from importlib.metadata import distributions
 import logging
 import os
 from pathlib import Path
 import tempfile
 import traceback
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 output = Path(os.environ["GAPHOR_FOLDER_TEST_OUTPUT"])
 
@@ -34,14 +38,27 @@ with (output / "installed-plugin.txt").open("w", encoding="utf-8") as report:
             from gaphor_description_editor.model import read_description, save_documentation
             from gaphor_folder_diagram.model import create_capture, validate_layout
             from gaphor_folder_diagram.scanner import scan_folder
+            from zoom_integration import assert_style_isolation, exercise_zoom
 
             Gtk.init()
+            # Gaphor's plugin finder can return an unrelated distribution for a
+            # named lookup. Filter actual metadata, also detecting old duplicates.
+            installed = list(distributions())
+            for name, expected in (("gaphor-folder-diagram", "0.1.1"),
+                                   ("gaphor-description-editor", "0.3.0")):
+                matches = [d for d in installed if d.metadata["Name"] == name]
+                assert len(matches) == 1, (name, [d.version for d in matches])
+                assert matches[0].version == expected
+            services = [ep for d in installed for ep in d.entry_points
+                        if ep.group == "gaphor.services" and ep.name == "folder_diagram"]
+            assert len(services) == 1
             sessions = [Session(), Session()]
             try:
                 with tempfile.TemporaryDirectory(prefix="gaphor-folder-integration-") as directory:
                     (Path(directory) / "archivo.ts").write_text("", encoding="utf-8")
                     snapshot = scan_folder(directory)
                     captures = []
+                    styles = []
                     for index, session in enumerate(sessions):
                         session.get_service("main_window").window = Gtk.Window()
                         importer = session.get_service("folder_diagram")
@@ -68,12 +85,14 @@ with (output / "installed-plugin.txt").open("w", encoding="utf-8") as report:
                         assert artifact.note == f"Nota {index}"
                         validate_layout(capture.diagram)
                         captures.append(capture)
+                        styles.append(exercise_zoom(session, capture, ("color: navy;", "color: maroon;")[index]))
                     assert captures[0].package.model is not captures[1].package.model
                     assert captures[0].package.name == captures[1].package.name
+                    assert_style_isolation(*styles)
             finally:
                 for session in sessions:
                     session.shutdown()
-            report.write("PASS: menú, acción, selección, dos proyectos y coexistencia con Descripción.\n")
+            report.write("PASS: 0.1.1 sin servicios duplicados; menú, destino, Ctrl+rueda nativo, refresco CSS y dos proyectos con Propiedades.\n")
             (output / "installed-plugin-status.txt").write_text("PASS", encoding="utf-8")
     except Exception:
         traceback.print_exc(file=report)
