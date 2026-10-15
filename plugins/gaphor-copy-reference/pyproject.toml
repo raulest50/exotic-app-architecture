@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gaphor-copy-reference"
+version = "0.1.0"
+description = "Copiar nombres y rutas del diagrama desde los menús contextuales de Gaphor"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["gaphor==3.3.2"]
+
+[project.entry-points."gaphor.services"]
+copy_reference = "gaphor_copy_reference:CopyReferenceService"
+
+[tool.setuptools.packages.find]
+include = ["gaphor_copy_reference*"]
