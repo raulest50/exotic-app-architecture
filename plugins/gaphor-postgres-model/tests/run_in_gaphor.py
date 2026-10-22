@@ -1,3 +1,4 @@
+"""Test runner for the interpreter bundled with Gaphor. Temporary models only."""
 import contextlib
 import logging
 import os
@@ -6,7 +7,7 @@ import sys
 import traceback
 import unittest
 
-output = Path(os.environ["GAPHOR_ORTHOGONAL_TEST_OUTPUT"])
+output = Path(os.environ["GAPHOR_POSTGRES_TEST_OUTPUT"])
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 with (output / "results.txt").open("w", encoding="utf-8") as report:
     try:
@@ -14,7 +15,7 @@ with (output / "results.txt").open("w", encoding="utf-8") as report:
             logging.basicConfig(stream=report, level=logging.WARNING, force=True)
             suite = unittest.defaultTestLoader.discover(str(Path(__file__).parent), pattern="test_*.py")
             result = unittest.TextTestRunner(stream=report, verbosity=2).run(suite)
-            (output / "status.txt").write_text("PASS" if result.wasSuccessful() else "FAIL", encoding="utf-8")
+            (output / "status.txt").write_text("PASS" if result.wasSuccessful() else "FAIL")
     except Exception:
         traceback.print_exc(file=report)
-        (output / "status.txt").write_text("ERROR", encoding="utf-8")
+        (output / "status.txt").write_text("ERROR")
