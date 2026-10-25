@@ -1325,6 +1325,7 @@ component name {
 <ref refid="a93fd935-c8b5-11f1-ac55-bc09b9551b3f"/>
 <ref refid="047f46c9-cca8-11f1-a200-bc09b9551b3f"/>
 <ref refid="5d13555b-ccdb-11f1-ae3c-bc09b9551b3f"/>
+<ref refid="2f940af4-ce2a-11f1-8fa8-bc09b9551b3f"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -1452,6 +1453,7 @@ component name {
 <ref refid="5a8933dd-ccd9-11f1-843c-bc09b9551b3f"/>
 <ref refid="f335a8d3-ccda-11f1-94b4-bc09b9551b3f"/>
 <ref refid="580e0635-cdb2-11f1-9279-bc09b9551b3f"/>
+<ref refid="1e18599e-ce2a-11f1-bacb-bc09b9551b3f"/>
 <ref refid="0a41d7b6-ccd7-11f1-b48e-bc09b9551b3f"/>
 <ref refid="9c533401-ccbd-11f1-9e04-bc09b9551b3f"/>
 <ref refid="110f3996-ccbe-11f1-92b6-bc09b9551b3f"/>
@@ -1466,6 +1468,7 @@ component name {
 <ref refid="a8a39162-c8b5-11f1-a1df-bc09b9551b3f"/>
 <ref refid="03dab04e-cca8-11f1-b176-bc09b9551b3f"/>
 <ref refid="5c65ef06-ccdb-11f1-b8d9-bc09b9551b3f"/>
+<ref refid="2e8d73a6-ce2a-11f1-998e-bc09b9551b3f"/>
 </reflist>
 </ownedPresentation>
 </UML:ComponentDiagram>
@@ -5400,6 +5403,7 @@ component name {
 <ref refid="2b5bd8b6-cca7-11f1-89d4-bc09b9551b3f"/>
 <ref refid="96e024b8-ccbd-11f1-bf2e-bc09b9551b3f"/>
 <ref refid="580dd135-cdb2-11f1-b60c-bc09b9551b3f"/>
+<ref refid="1e180561-ce2a-11f1-a59c-bc09b9551b3f"/>
 </reflist>
 </ownedType>
 <owningPackage>
@@ -5428,6 +5432,7 @@ component name {
 <ref refid="6d3fd4fb-ccda-11f1-94a9-bc09b9551b3f"/>
 <ref refid="580dd135-cdb2-11f1-b60c-bc09b9551b3f"/>
 <ref refid="5e867aad-cdb2-11f1-a31b-bc09b9551b3f"/>
+<ref refid="1e180561-ce2a-11f1-a59c-bc09b9551b3f"/>
 </reflist>
 </packagedElement>
 <presentation>
@@ -5438,7 +5443,7 @@ component name {
 </UML:Package>
 <UML:PackageItem id="1f534818-cca7-11f1-a01b-bc09b9551b3f">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 1763.9332944349915, 614.4936459992061)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 1763.9332944349915, 614.4936459992063)</val>
 </matrix>
 <top-left>
 <val>(-508.0265370483994, -516.4936459992061)</val>
@@ -5472,6 +5477,7 @@ component name {
 <ref refid="6c61dc53-ccda-11f1-a089-bc09b9551b3f"/>
 <ref refid="580e0635-cdb2-11f1-9279-bc09b9551b3f"/>
 <ref refid="5d570c07-cdb2-11f1-a6f8-bc09b9551b3f"/>
+<ref refid="1e18599e-ce2a-11f1-bacb-bc09b9551b3f"/>
 </reflist>
 </children>
 <diagram>
@@ -5613,7 +5619,7 @@ component name {
 </UML:Artifact>
 <UML:ArtifactItem id="e646db15-cca7-11f1-a1ea-bc09b9551b3f">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 302.8378435562591, 163.30337379454693)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 304.2756174832041, 163.30337379454645)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -5651,7 +5657,7 @@ component name {
 <val>(1.0, 0.0, 0.0, 1.0, 1937.7422865752578, 284.42635454574025)</val>
 </matrix>
 <points>
-<val>[(162.7925198463281, 552.9905138052288), (114.22580987929723, 554.0151032621295)]</val>
+<val>[(164.23029377327293, 552.9905138052284), (114.225809879297, 552.9905138052292)]</val>
 </points>
 <head-connection>
 <ref refid="e646db15-cca7-11f1-a1ea-bc09b9551b3f"/>
@@ -5825,7 +5831,7 @@ component name {
 </UML:Package>
 <UML:PackageItem id="8a0a3c13-ccbd-11f1-809c-bc09b9551b3f">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, 239.31722839782353, 259.4961561140903)</val>
+<val>(1.0, 0.0, 0.0, 1.0, 241.03803805948837, 279.803373794547)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -6484,6 +6490,7 @@ Tambien deberia tener un control o elemento  de ui que permita definir el propos
 <ref refid="ba9e2f3a-ccc7-11f1-b9dc-bc09b9551b3f"/>
 <ref refid="c6e8579b-ccc7-11f1-9817-bc09b9551b3f"/>
 <ref refid="5e867aad-cdb2-11f1-a31b-bc09b9551b3f"/>
+<ref refid="2f940af4-ce2a-11f1-8fa8-bc09b9551b3f"/>
 </reflist>
 </clientDependency>
 <name>
@@ -7033,7 +7040,7 @@ Implementa tambien funciones de Mapping: Transformar cabecera, insumos, cantidad
 </UML:Artifact>
 <UML:ArtifactItem id="580e0635-cdb2-11f1-9279-bc09b9551b3f">
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, -233.9332944349918, 245.80337379454693)</val>
+<val>(1.0, 0.0, 0.0, 1.0, -169.98490115718565, 230.49615611409013)</val>
 </matrix>
 <top-left>
 <val>(0.0, 0.0)</val>
@@ -7071,10 +7078,10 @@ Implementa tambien funciones de Mapping: Transformar cabecera, insumos, cantidad
 <ref refid="5e867aad-cdb2-11f1-a31b-bc09b9551b3f"/>
 </subject>
 <matrix>
-<val>(1.0, 0.0, 0.0, 1.0, -166.7149480698598, 52.74120265834818)</val>
+<val>(1.0, 0.0, 0.0, 1.0, -156.46528893576266, 50.260335326273754)</val>
 </matrix>
 <points>
-<val>[(-4.75712502401916, 193.0621711361988), (-4.757125024019047, 41.55066375119736)]</val>
+<val>[(12.057919916300193, 180.23582078781635), (12.057919916300193, 44.031531083271716)]</val>
 </points>
 <head-connection>
 <ref refid="580e0635-cdb2-11f1-9279-bc09b9551b3f"/>
@@ -7103,6 +7110,99 @@ Implementa tambien funciones de Mapping: Transformar cabecera, insumos, cantidad
 <supplier>
 <reflist>
 <ref refid="580dd135-cdb2-11f1-b60c-bc09b9551b3f"/>
+</reflist>
+</supplier>
+</UML:Dependency>
+<UML:Artifact id="1e180561-ce2a-11f1-a59c-bc09b9551b3f">
+<name>
+<val>PackagingDefinition.tsx</val>
+</name>
+<owningPackage>
+<ref refid="1f52bfa8-cca7-11f1-af5f-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="1f52bfa8-cca7-11f1-af5f-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="1e18599e-ce2a-11f1-bacb-bc09b9551b3f"/>
+</reflist>
+</presentation>
+<supplierDependency>
+<reflist>
+<ref refid="2f940af4-ce2a-11f1-8fa8-bc09b9551b3f"/>
+</reflist>
+</supplierDependency>
+</UML:Artifact>
+<UML:ArtifactItem id="1e18599e-ce2a-11f1-bacb-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -285.6887030053132, 329.31527832791744)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>215.0</val>
+</width>
+<height>
+<val>58.0</val>
+</height>
+<diagram>
+<ref refid="1f94fe5e-c810-11f1-835f-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="1f534818-cca7-11f1-a01b-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="1e180561-ce2a-11f1-a59c-bc09b9551b3f"/>
+</subject>
+</UML:ArtifactItem>
+<UML:DependencyItem id="2e8d73a6-ce2a-11f1-998e-bc09b9551b3f">
+<diagram>
+<ref refid="1f94fe5e-c810-11f1-835f-bc09b9551b3f"/>
+</diagram>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>False</val>
+</orthogonal>
+<subject>
+<ref refid="2f940af4-ce2a-11f1-8fa8-bc09b9551b3f"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1568.5207934543537, 718.1475995252157)</val>
+</matrix>
+<points>
+<val>[(5.9486877467726345, 256.28117335912407), (5.9486877467726345, 21.25776144075212)]</val>
+</points>
+<head-connection>
+<ref refid="1e18599e-ce2a-11f1-bacb-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="6554a14f-ccc7-11f1-85d1-bc09b9551b3f"/>
+</tail-connection>
+</UML:DependencyItem>
+<UML:Dependency id="2f940af4-ce2a-11f1-8fa8-bc09b9551b3f">
+<client>
+<reflist>
+<ref refid="65546bb3-ccc7-11f1-bd5f-bc09b9551b3f"/>
+</reflist>
+</client>
+<name>
+<val>render</val>
+</name>
+<owningPackage>
+<ref refid="1f92784f-c810-11f1-a370-bc09b9551b3f"/>
+</owningPackage>
+<presentation>
+<reflist>
+<ref refid="2e8d73a6-ce2a-11f1-998e-bc09b9551b3f"/>
+</reflist>
+</presentation>
+<supplier>
+<reflist>
+<ref refid="1e180561-ce2a-11f1-a59c-bc09b9551b3f"/>
 </reflist>
 </supplier>
 </UML:Dependency>
