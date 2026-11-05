@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gaphor-bpmn-model"
+version = "0.1.1"
+description = "Modelado descriptivo de procesos BPMN para Gaphor 3.3.2"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["gaphor==3.3.2"]
+
+[project.entry-points."gaphor.modelinglanguages"]
+BPMN = "gaphor_bpmn_model.language:BPMNLanguage"
+
+[project.entry-points."gaphor.services"]
+bpmn_model = "gaphor_bpmn_model.service:BPMNService"
+
+[project.entry-points."gaphor.modules"]
+bpmn_editor = "gaphor_bpmn_model.service"
+
+[tool.setuptools.packages.find]
+include = ["gaphor_bpmn_model*"]

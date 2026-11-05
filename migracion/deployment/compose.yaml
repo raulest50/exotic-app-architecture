@@ -1,0 +1,263 @@
+name: exotic-${ENVIRONMENT:?Define ENVIRONMENT as staging or production}
+
+# Runtime only: images/artifacts are prepared in CI, never compiled on the VM.
+# This metadata is consumed by the Bash scripts without sourcing the env file.
+x-deployment:
+  ENVIRONMENT: "${ENVIRONMENT:?Define ENVIRONMENT}"
+  DB_NAME: "${DB_NAME:?Define DB_NAME}"
+  DB_USER: "${DB_USER:?Define DB_USER}"
+  BACKEND_IMAGE: "${BACKEND_IMAGE:?Provide a reviewed backend image}"
+  FRONTEND_DIST_DIR: "${FRONTEND_DIST_DIR:?Provide an absolute versioned dist directory}"
+  PUBLIC_FRONTEND_DIST_DIR: "${PUBLIC_FRONTEND_DIST_DIR:-${FRONTEND_DIST_DIR}}"
+  PUBLIC_FRONTEND_HOST: "${PUBLIC_FRONTEND_HOST:-unconfigured.invalid}"
+  POSTGRES_ADMIN_PASSWORD_FILE: "${POSTGRES_ADMIN_PASSWORD_FILE:?Provide the private administrator password file}"
+  DB_PASSWORD_FILE: "${DB_PASSWORD_FILE:?Provide the private application password file}"
+  JWT_SECRET_FILE: "${JWT_SECRET_FILE:?Provide the private JWT secret file}"
+  BACKEND_PROPERTIES_FILE: "${BACKEND_PROPERTIES_FILE:?Provide the private extra properties file}"
+  PUBLIC_DOMAIN: "${PUBLIC_DOMAIN:?Define the frontend hostname}"
+  API_PUBLIC_DOMAIN: "${API_PUBLIC_DOMAIN:?Define the API hostname}"
+  APP_COMPATIBILITY_CONFIRMED: "${APP_COMPATIBILITY_CONFIRMED:-false}"
+  CADDY_IMAGE: "${CADDY_IMAGE:-caddy:2-alpine@sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5}"
+  BACKUP_REMOTE_URI: "${BACKUP_REMOTE_URI:-}"
+
+x-logging: &logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  database:
+    image: ${POSTGRES_IMAGE:-postgres:18-bookworm@sha256:5c4783a8cc3f0074912164f94dfa1be4e043438f0f707cf968d7af9a0d31a2c8}
+    entrypoint: ["/bin/bash", "/opt/exotic/postgres-entrypoint.sh"]
+    restart: unless-stopped
+    stop_grace_period: 90s
+    cpus: "${DATABASE_CPU_LIMIT:-0.30}"
+    mem_limit: ${DATABASE_MEMORY_LIMIT:-1536m}
+    shm_size: ${DATABASE_SHM_SIZE:-256m}
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      TZ: America/Bogota
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ${DB_NAME:?Define DB_NAME}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_admin_password
+      APP_DB_USER: ${DB_USER:?Define a dedicated application role}
+      APP_DB_PASSWORD_FILE: /run/exotic-bootstrap/app-password
+      # PostgreSQL 18 changed PGDATA and the persistent mount's parent directory.
+      PGDATA: /var/lib/postgresql/18/docker
+    tmpfs:
+      - /run/exotic-bootstrap:rw,noexec,nosuid,size=1m,mode=0700
+    command:
+      - postgres
+      - -c
+      - shared_buffers=${DATABASE_SHARED_BUFFERS:-256MB}
+      - -c
+      - max_connections=${DATABASE_MAX_CONNECTIONS:-60}
+      - -c
+      - timezone=America/Bogota
+    secrets:
+      - source: postgres_admin_password
+        target: postgres_admin_password
+      - source: database_password
+        target: DB_PASSWORD
+    volumes:
+      - type: volume
+        source: postgres_data
+        target: /var/lib/postgresql
+      - type: bind
+        source: ./postgres/entrypoint.sh
+        target: /opt/exotic/postgres-entrypoint.sh
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./postgres/init-app-user.sh
+        target: /docker-entrypoint-initdb.d/10-init-app-user.sh
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      - data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    logging: *logging
+
+  backend:
+    image: ${BACKEND_IMAGE:?Provide a reviewed versioned backend image}
+    # Match the operator-owned 0600 bind-mounted secrets and writable volumes.
+    user: "1000:1000"
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 60s
+    working_dir: /app
+    read_only: true
+    cpus: "${BACKEND_CPU_LIMIT:-0.65}"
+    cpu_shares: ${BACKEND_CPU_SHARES:-1024}
+    mem_limit: ${BACKEND_MEMORY_LIMIT:-2560m}
+    pids_limit: 512
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,nosuid,size=256m
+    environment:
+      TZ: America/Bogota
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=America/Bogota -XX:MaxRAMPercentage=60 -XX:+ExitOnOutOfMemoryError"
+      APP_RUNTIME_ENVIRONMENT: ${ENVIRONMENT:?Define ENVIRONMENT}
+      SPRING_PROFILES_ACTIVE: ${ENVIRONMENT:?Define ENVIRONMENT}
+      SERVER_PORT: "8080"
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
+      DB_HOST: database
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:?Define DB_NAME}
+      DB_USER: ${DB_USER:?Define DB_USER}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${DB_NAME:?Define DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:?Define DB_USER}
+      # The source's ${DB_PASSWORD} placeholder resolves from the config tree.
+      # Passwords and JWT material are files, never Compose interpolation values.
+      SPRING_CONFIG_IMPORT: file:/run/secrets/backend.properties,configtree:/run/secrets/
+      SPRING_CONFIG_ADDITIONAL_LOCATION: optional:classpath:application-secrets.properties
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "${BACKEND_DB_POOL_SIZE:-10}"
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "false"
+      SPRING_FLYWAY_CLEAN_DISABLED: "true"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: "false"
+    secrets:
+      - source: database_password
+        target: DB_PASSWORD
+      - source: database_password
+        target: spring.datasource.password
+      - source: jwt_secret
+        target: jwt.secret
+      - source: backend_properties
+        target: backend.properties
+    volumes:
+      - type: volume
+        source: uploads
+        target: /app/data
+        volume:
+          nocopy: true
+      - type: volume
+        source: application_logs
+        target: /app/logs
+        volume:
+          nocopy: true
+    networks:
+      data: {}
+      edge:
+        aliases:
+          - backend-${ENVIRONMENT:?Define ENVIRONMENT}
+    expose:
+      - "8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      # HTTP liveness only. /api/auth/** is public in the current SecurityConfig.
+      # 404/401/403 do not establish functional or business readiness.
+      test:
+        - CMD-SHELL
+        - >-
+          code=$$(curl --silent --show-error --max-time 4 --output /dev/null
+          --write-out '%{http_code}' http://127.0.0.1:8080/api/auth/__deployment_probe)
+          && [ "$$code" -ge 200 ] && [ "$$code" -lt 500 ]
+      interval: 20s
+      timeout: 6s
+      retries: 10
+      start_period: 120s
+    logging: *logging
+
+  # React's dist is the frontend. Caddy serves it; a separate React process
+  # or Vite development server is not needed in the deployed environment.
+  web:
+    image: ${CADDY_IMAGE:-caddy:2-alpine@sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5}
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+    user: "1000:1000"
+    environment:
+      PUBLIC_FRONTEND_HOST: "${PUBLIC_FRONTEND_HOST:-unconfigured.invalid}"
+    restart: unless-stopped
+    read_only: true
+    cpus: "${WEB_CPU_LIMIT:-0.04}"
+    mem_limit: 128m
+    pids_limit: 64
+    cap_drop:
+      - ALL
+    # The official Caddy binary carries this file capability. Keep it in the
+    # bounding set so it can execute even though this service listens on 8080.
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m,mode=1777
+      - /data:rw,noexec,nosuid,size=16m,uid=1000,gid=1000
+      - /config:rw,noexec,nosuid,size=16m,uid=1000,gid=1000
+    volumes:
+      - type: bind
+        source: ./config/frontend.Caddyfile
+        target: /etc/caddy/Caddyfile
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${FRONTEND_DIST_DIR:?Provide the versioned frontend dist directory}
+        target: /srv
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${PUBLIC_FRONTEND_DIST_DIR:-${FRONTEND_DIST_DIR}}
+        target: /srv-public
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      edge:
+        aliases:
+          - web-${ENVIRONMENT:?Define ENVIRONMENT}
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--output-document=/dev/null", "http://127.0.0.1:8080/index.html"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    logging: *logging
+
+networks:
+  data:
+    internal: true
+  edge:
+    external: true
+    name: exotic-${ENVIRONMENT:?Define ENVIRONMENT}-edge
+
+# External, stable names protect persistence from ordinary Compose teardown.
+# prepare.sh creates these explicitly; applications never share their volumes.
+volumes:
+  postgres_data:
+    external: true
+    name: exotic-${ENVIRONMENT:?Define ENVIRONMENT}-postgres
+  uploads:
+    external: true
+    name: exotic-${ENVIRONMENT:?Define ENVIRONMENT}-uploads
+  application_logs:
+    external: true
+    name: exotic-${ENVIRONMENT:?Define ENVIRONMENT}-logs
+
+secrets:
+  postgres_admin_password:
+    file: ${POSTGRES_ADMIN_PASSWORD_FILE:?Provide the private administrator password file}
+  database_password:
+    file: ${DB_PASSWORD_FILE:?Provide the private application password file}
+  jwt_secret:
+    file: ${JWT_SECRET_FILE:?Provide the private JWT secret file}
+  backend_properties:
+    file: ${BACKEND_PROPERTIES_FILE:?Provide the private extra properties file}

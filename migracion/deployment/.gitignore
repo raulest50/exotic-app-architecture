@@ -1,0 +1,22 @@
+# Only examples belong in Git. Real configuration/secrets live outside checkout.
+*.env
+!*.env.example
+.env
+.env.*
+!.env.example
+*.properties
+*.secret
+*.key
+*.pem
+*.ppk
+private/
+secrets/
+runtime/
+backups/
+releases/
+sites-enabled/
+.validation/
+*.dump
+*.tar
+*.tar.gz
+*.tgz

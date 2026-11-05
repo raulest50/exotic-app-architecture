@@ -1,0 +1,87 @@
+name: exotic-edge
+
+# Standalone alternative to compose.edge.yaml, not an override to merge with it.
+# One shared proxy keeps the topology at seven containers (3 + 3 + 1).
+# Publish only on the VM's IPv4 loopback. Operators reach these HTTP listeners
+# through SSH; this variant publishes neither TCP 80/443 nor any UDP listener.
+services:
+  edge:
+    image: ${CADDY_IMAGE:-caddy:2-alpine@sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5}
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+    restart: unless-stopped
+    cpus: 0.08
+    mem_limit: 256m
+    pids_limit: 128
+    read_only: true
+    cap_drop:
+      - ALL
+    # Required in the bounding set for the official binary's file capability,
+    # even though all four configured listeners use unprivileged ports.
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m,mode=1777
+    ports:
+      - target: 15173
+        published: "15173"
+        host_ip: "127.0.0.1"
+        protocol: tcp
+      - target: 18080
+        published: "18080"
+        host_ip: "127.0.0.1"
+        protocol: tcp
+      - target: 13000
+        published: "13000"
+        host_ip: "127.0.0.1"
+        protocol: tcp
+      - target: 18081
+        published: "18081"
+        host_ip: "127.0.0.1"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: ./config/edge.private.Caddyfile
+        target: /etc/caddy/Caddyfile
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./config/edge.loopback.Caddyfile
+        target: /etc/caddy/edge.loopback.Caddyfile
+        read_only: true
+        bind:
+          create_host_path: false
+      # Keep the same explicitly prepared external volumes as the public
+      # variant. HTTP-only operation needs no public certificates or ACME email.
+      - type: volume
+        source: caddy_data
+        target: /data
+      - type: volume
+        source: caddy_config
+        target: /config
+    networks:
+      - production_edge
+      - staging_edge
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  production_edge:
+    external: true
+    name: exotic-production-edge
+  staging_edge:
+    external: true
+    name: exotic-staging-edge
+
+volumes:
+  caddy_data:
+    external: true
+    name: exotic-edge-caddy-data
+  caddy_config:
+    external: true
+    name: exotic-edge-caddy-config

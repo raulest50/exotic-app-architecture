@@ -1,0 +1,10 @@
+{
+	auto_https off
+	admin off
+	persist_config off
+	servers {
+		protocols h1
+	}
+}
+
+import /etc/caddy/edge.loopback.Caddyfile

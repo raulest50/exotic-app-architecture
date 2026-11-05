@@ -1,0 +1,21 @@
+# INACTIVE EXAMPLE. An operator activates it by copying to the private
+# EDGE_SITES_DIR as production.caddy after reviewing application compatibility.
+# It can be prepared before DNS; public ACME validation waits for correct DNS.
+# Preparing these host routes does not perform the data/user cutover from Render.
+{$PRODUCTION_WEB_DOMAIN} {
+	encode zstd gzip
+	log
+	reverse_proxy web-production:8080 {
+		import private_forwarding
+	}
+}
+
+{$PRODUCTION_API_DOMAIN} {
+	encode zstd gzip
+	log
+	# Preserve ALL existing API paths, including routes outside /api, such as
+	# /productos, /clientes, /usuarios, /bi and /documents. Do not strip prefixes.
+	reverse_proxy backend-production:8080 {
+		import private_forwarding
+	}
+}

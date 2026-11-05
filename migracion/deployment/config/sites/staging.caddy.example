@@ -1,0 +1,22 @@
+# INACTIVE EXAMPLE. Prepare a private EDGE_SITES_DIR manually and copy only
+# this file to staging.caddy there after setting real domains and validating
+# frontend API selection, backend CORS, and authentication for the new origins.
+# DNS and public ACME validation remain separate from local routing checks.
+# Additional staging access protection remains a user decision; none is added here.
+{$STAGING_WEB_DOMAIN} {
+	encode zstd gzip
+	log
+	reverse_proxy web-staging:8080 {
+		import private_forwarding
+	}
+}
+
+{$STAGING_API_DOMAIN} {
+	encode zstd gzip
+	log
+	# Preserve ALL existing API paths. Some controllers are outside /api, so a
+	# /api-only matcher would silently route valid endpoints to the SPA instead.
+	reverse_proxy backend-staging:8080 {
+		import private_forwarding
+	}
+}

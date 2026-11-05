@@ -52,7 +52,22 @@ component compartment:first-child {
 component name {
     text-align: center;
     vertical-align: top;
-}</val>
+}
+
+/* Vista de destino propuesta; estilos acotados a este diagrama. */
+diagram[name="deployment migracion"] { background-color: white; }
+diagram[name="deployment migracion"] * {
+    color: #24364b; text-color: #24364b; font-family: sans-serif; font-size: 14;
+    line-width: 1.4;
+}
+diagram[name="deployment migracion"] node { background-color: #edf4fc; }
+diagram[name="deployment migracion"] node node { background-color: #f8fafc; }
+diagram[name="deployment migracion"] node node node { background-color: #e9f5ee; }
+diagram[name="deployment migracion"] node name { text-align: left; vertical-align: top; }
+diagram[name="deployment migracion"] comment { background-color: #fff9e8; }
+diagram[name="deployment migracion"] association { font-size: 12; }
+diagram[name="deployment migracion"] dependency { font-size: 12; }
+</val>
 </styleSheet>
 </Core:StyleSheet>
 <UML:Package id="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed">
@@ -79,6 +94,7 @@ component name {
 <nestedPackage>
 <reflist>
 <ref refid="e5d01252-c536-11f1-8d22-b81ea434d48d"/>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
 </reflist>
 </nestedPackage>
 <nestingPackage>
@@ -103,6 +119,7 @@ component name {
 <ref refid="e5d01252-c536-11f1-8d22-b81ea434d48d"/>
 <ref refid="fac07e18-c536-11f1-8d22-b81ea434d48d"/>
 <ref refid="ea5f3352-c5c2-11f1-aea3-b81ea434d48d"/>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
 </reflist>
 </packagedElement>
 </UML:Package>
@@ -7206,5 +7223,1587 @@ Implementa tambien funciones de Mapping: Transformar cabecera, insumos, cantidad
 </reflist>
 </supplier>
 </UML:Dependency>
+<UML:Package id="176e4081-d894-11f1-b519-bc09b9551b3f">
+<comment>
+<reflist>
+<ref refid="177b34d3-d894-11f1-9cf6-bc09b9551b3f"/>
+</reflist>
+</comment>
+<name>
+<val>Migración VM</val>
+</name>
+<nestingPackage>
+<ref refid="49e30b84-c535-11f1-8d22-b81ea434d48d"/>
+</nestingPackage>
+<note>
+<val>Destino propuesto en Google Compute Engine. No representa una migración ejecutada.</val>
+</note>
+<ownedDiagram>
+<reflist>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</reflist>
+</ownedDiagram>
+<ownedType>
+<reflist>
+<ref refid="176e4ee2-d894-11f1-a9cb-bc09b9551b3f"/>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+<ref refid="1779b0e9-d894-11f1-980c-bc09b9551b3f"/>
+<ref refid="177aab25-d894-11f1-b1db-bc09b9551b3f"/>
+<ref refid="177ba4fe-d894-11f1-9f76-bc09b9551b3f"/>
+<ref refid="177c4682-d894-11f1-9977-bc09b9551b3f"/>
+<ref refid="177d42b8-d894-11f1-8b2a-bc09b9551b3f"/>
+<ref refid="177e8273-d894-11f1-b7f6-bc09b9551b3f"/>
+<ref refid="177fb982-d894-11f1-a229-bc09b9551b3f"/>
+<ref refid="17810192-d894-11f1-981a-bc09b9551b3f"/>
+<ref refid="17824413-d894-11f1-ae77-bc09b9551b3f"/>
+</reflist>
+</ownedType>
+<owningPackage>
+<ref refid="49e30b84-c535-11f1-8d22-b81ea434d48d"/>
+</owningPackage>
+<packagedElement>
+<reflist>
+<ref refid="176e4ee2-d894-11f1-a9cb-bc09b9551b3f"/>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+<ref refid="1779b0e9-d894-11f1-980c-bc09b9551b3f"/>
+<ref refid="177aab25-d894-11f1-b1db-bc09b9551b3f"/>
+<ref refid="177ba4fe-d894-11f1-9f76-bc09b9551b3f"/>
+<ref refid="177c4682-d894-11f1-9977-bc09b9551b3f"/>
+<ref refid="177d42b8-d894-11f1-8b2a-bc09b9551b3f"/>
+<ref refid="177e8273-d894-11f1-b7f6-bc09b9551b3f"/>
+<ref refid="177fb982-d894-11f1-a229-bc09b9551b3f"/>
+<ref refid="17810192-d894-11f1-981a-bc09b9551b3f"/>
+<ref refid="17824413-d894-11f1-ae77-bc09b9551b3f"/>
+<ref refid="17844920-d894-11f1-a284-bc09b9551b3f"/>
+<ref refid="1785635f-d894-11f1-97d0-bc09b9551b3f"/>
+</reflist>
+</packagedElement>
+</UML:Package>
+<UML:DeploymentDiagram id="176e4884-d894-11f1-8eb8-bc09b9551b3f">
+<element>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</element>
+<name>
+<val>deployment migracion</val>
+</name>
+<note>
+<val>Propuesta del 4 de noviembre de 2026: siete contenedores independientes (3 producción + 3 staging + 1 proxy). VM confirmada en ssh_gcloud/CAPACIDADES_VM.md: 2 vCPU, 10 GiB nominales, 9,716 GiB reconocidos, disco persistente 50 GiB. Límites propuestos: CPU 1,40 vCPU (70 %) y RAM 6912 MiB = 6,75 GiB (69,5 % de la memoria reconocida); margen de 0,60 vCPU y 2,966 GiB para SO, Docker y mantenimiento. Son techos de contenedor, no consumo previsto ni reserva de CPU garantizada. No se aumenta consumo para alcanzar un porcentaje. Validar arranque, latencia, concurrencia y restauración en staging. Pruebas de carga y compilaciones fuera de esta VM. Los límites nuevos están pendientes de trasladarse a compose.yaml, compose.edge.yaml y los ejemplos env; este cambio solo modela la propuesta y no altera los archivos de implementación ni el servidor. El diagrama Despliegue conserva el origen Render. API/frontend y CORS tienen pendientes de compatibilidad.</val>
+</note>
+<ownedPresentation>
+<reflist>
+<ref refid="176e5348-d894-11f1-af1d-bc09b9551b3f"/>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+<ref refid="176f9443-d894-11f1-9eb2-bc09b9551b3f"/>
+<ref refid="176ff696-d894-11f1-a5fd-bc09b9551b3f"/>
+<ref refid="177086dd-d894-11f1-9502-bc09b9551b3f"/>
+<ref refid="177139f1-d894-11f1-b87d-bc09b9551b3f"/>
+<ref refid="1771e988-d894-11f1-9709-bc09b9551b3f"/>
+<ref refid="1772cfe2-d894-11f1-bdde-bc09b9551b3f"/>
+<ref refid="1773b296-d894-11f1-adb2-bc09b9551b3f"/>
+<ref refid="17748772-d894-11f1-84b8-bc09b9551b3f"/>
+<ref refid="17755eed-d894-11f1-bf6c-bc09b9551b3f"/>
+<ref refid="177620b7-d894-11f1-8ce8-bc09b9551b3f"/>
+<ref refid="17770f01-d894-11f1-95f8-bc09b9551b3f"/>
+<ref refid="177807f2-d894-11f1-9fe6-bc09b9551b3f"/>
+<ref refid="1778e94b-d894-11f1-b42e-bc09b9551b3f"/>
+<ref refid="1779b760-d894-11f1-b506-bc09b9551b3f"/>
+<ref refid="177ab08f-d894-11f1-a8a3-bc09b9551b3f"/>
+<ref refid="177b369f-d894-11f1-8f2b-bc09b9551b3f"/>
+<ref refid="177bbb5d-d894-11f1-8c34-bc09b9551b3f"/>
+<ref refid="177c5715-d894-11f1-974d-bc09b9551b3f"/>
+<ref refid="177d5363-d894-11f1-8d6c-bc09b9551b3f"/>
+<ref refid="177e9334-d894-11f1-a765-bc09b9551b3f"/>
+<ref refid="177fca84-d894-11f1-a5dc-bc09b9551b3f"/>
+<ref refid="178112e3-d894-11f1-a5f8-bc09b9551b3f"/>
+<ref refid="1782548f-d894-11f1-bf23-bc09b9551b3f"/>
+<ref refid="178450e8-d894-11f1-9da1-bc09b9551b3f"/>
+<ref refid="17856a28-d894-11f1-9c94-bc09b9551b3f"/>
+</reflist>
+</ownedPresentation>
+</UML:DeploymentDiagram>
+<UML:Device id="176e4ee2-d894-11f1-a9cb-bc09b9551b3f">
+<name>
+<val>Usuario · navegador
+React se ejecuta en el navegador</val>
+</name>
+<note>
+<val>El servidor web entrega archivos estáticos. La ejecución de React ocurre en el navegador del usuario.</val>
+</note>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="176e5348-d894-11f1-af1d-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Device>
+<UML:NodeItem id="176e5348-d894-11f1-af1d-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 480.0, 10.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>380.0</val>
+</width>
+<height>
+<val>90.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<subject>
+<ref refid="176e4ee2-d894-11f1-a9cb-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:Device id="176f2157-d894-11f1-abf8-bc09b9551b3f">
+<clientDependency>
+<reflist>
+<ref refid="17844920-d894-11f1-a284-bc09b9551b3f"/>
+<ref refid="1785635f-d894-11f1-97d0-bc09b9551b3f"/>
+</reflist>
+</clientDependency>
+<comment>
+<reflist>
+<ref refid="176f92a4-d894-11f1-acab-bc09b9551b3f"/>
+<ref refid="1778e76a-d894-11f1-ba8a-bc09b9551b3f"/>
+</reflist>
+</comment>
+<name>
+<val>Google Compute Engine · vm-produccion · PROPUESTA
+Debian 13 + Docker Engine / Compose · 2 vCPU · 9,716 GiB RAM · disco 50 GiB</val>
+</name>
+<nestedNode>
+<reflist>
+<ref refid="176feeab-d894-11f1-a86c-bc09b9551b3f"/>
+<ref refid="17708149-d894-11f1-ae9f-bc09b9551b3f"/>
+<ref refid="177480a0-d894-11f1-8fea-bc09b9551b3f"/>
+</reflist>
+</nestedNode>
+<note>
+<val>Una única VM y un único disco compartidos: no hay alta disponibilidad ni aislamiento físico entre entornos. No se ha desplegado la aplicación aquí.</val>
+</note>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Device>
+<UML:NodeItem id="176f2679-d894-11f1-a26c-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 190.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>1340.0</val>
+</width>
+<height>
+<val>1130.0</val>
+</height>
+<children>
+<reflist>
+<ref refid="176f9443-d894-11f1-9eb2-bc09b9551b3f"/>
+<ref refid="176ff696-d894-11f1-a5fd-bc09b9551b3f"/>
+<ref refid="177086dd-d894-11f1-9502-bc09b9551b3f"/>
+<ref refid="17748772-d894-11f1-84b8-bc09b9551b3f"/>
+<ref refid="1778e94b-d894-11f1-b42e-bc09b9551b3f"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<subject>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:Comment id="176f92a4-d894-11f1-acab-bc09b9551b3f">
+<annotatedElement>
+<reflist>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>PRESUPUESTO DE LOS 7 CONTENEDORES
+CPU: 1,40 / 2 vCPU = 70 %
+RAM: 6,75 / 9,716 GiB = 69,5 %
+Margen del host: 0,60 vCPU + 2,966 GiB
+Techos propuestos; validar bajo carga.</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="176f9443-d894-11f1-9eb2-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Comment>
+<UML:CommentItem id="176f9443-d894-11f1-9eb2-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 35.0, 100.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>420.0</val>
+</width>
+<height>
+<val>150.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="176f92a4-d894-11f1-acab-bc09b9551b3f"/>
+</subject>
+</UML:CommentItem>
+<UML:ExecutionEnvironment id="176feeab-d894-11f1-a86c-bc09b9551b3f">
+<name>
+<val>edge · contenedor Caddy
+Proxy HTTPS compartido · TCP 80/443
+CPU ≤ 0,08 vCPU | RAM ≤ 256 MiB
+TLS: volúmenes caddy-data / caddy-config</val>
+</name>
+<node>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+</node>
+<note>
+<val>Proyecto Compose exotic-edge. Es el único contenedor que publica puertos de aplicación en el host. Dos dominios por entorno (web/API). Reenvío HTTP interno a 8080 conservando las URI. Certificados y estado persistentes en exotic-edge-caddy-data y exotic-edge-caddy-config.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="176ff696-d894-11f1-a5fd-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:ExecutionEnvironment>
+<UML:NodeItem id="176ff696-d894-11f1-a5fd-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 510.0, 100.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>420.0</val>
+</width>
+<height>
+<val>150.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="176feeab-d894-11f1-a86c-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:Node id="17708149-d894-11f1-ae9f-bc09b9551b3f">
+<comment>
+<reflist>
+<ref refid="1773b07b-d894-11f1-a8d1-bc09b9551b3f"/>
+</reflist>
+</comment>
+<name>
+<val>Producción · proyecto Compose
+exotic-production · 3 contenedores</val>
+</name>
+<nestedNode>
+<reflist>
+<ref refid="177133d4-d894-11f1-9f46-bc09b9551b3f"/>
+<ref refid="1771e4a5-d894-11f1-823c-bc09b9551b3f"/>
+<ref refid="1772caaa-d894-11f1-89e8-bc09b9551b3f"/>
+</reflist>
+</nestedNode>
+<node>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+</node>
+<note>
+<val>Agrupación lógica, no contenedor adicional. Proyectos, redes, credenciales y volúmenes independientes. Backend y base por red data interna; web/backend alcanzables únicamente por la red edge de este entorno. Actualizar un servicio no exige reiniciar los otros dos ni el otro entorno.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="177086dd-d894-11f1-9502-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Node>
+<UML:NodeItem id="177086dd-d894-11f1-9502-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 320.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>600.0</val>
+</width>
+<height>
+<val>630.0</val>
+</height>
+<children>
+<reflist>
+<ref refid="177139f1-d894-11f1-b87d-bc09b9551b3f"/>
+<ref refid="1771e988-d894-11f1-9709-bc09b9551b3f"/>
+<ref refid="1772cfe2-d894-11f1-bdde-bc09b9551b3f"/>
+<ref refid="1773b296-d894-11f1-adb2-bc09b9551b3f"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="17708149-d894-11f1-ae9f-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:ExecutionEnvironment id="177133d4-d894-11f1-9f46-bc09b9551b3f">
+<name>
+<val>web · Caddy + React dist
+CPU ≤ 0,04 vCPU | RAM ≤ 128 MiB
+HTTP interno :8080 · dist en solo lectura</val>
+</name>
+<node>
+<ref refid="17708149-d894-11f1-ae9f-bc09b9551b3f"/>
+</node>
+<note>
+<val>Publicación estática de FRONTEND_DIST_DIR de production; artefacto compilado fuera de la VM. No ejecuta servidor de desarrollo ni Node/Bun en producción. Actualización independiente del backend y base.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="177139f1-d894-11f1-b87d-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:ExecutionEnvironment>
+<UML:NodeItem id="177139f1-d894-11f1-b87d-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 100.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>520.0</val>
+</width>
+<height>
+<val>105.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="177086dd-d894-11f1-9502-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="177133d4-d894-11f1-9f46-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:ExecutionEnvironment id="1771e4a5-d894-11f1-823c-bc09b9551b3f">
+<name>
+<val>backend · Java / Spring
+CPU ≤ 0,65 vCPU | RAM ≤ 2560 MiB
+HTTP interno :8080 · documentos + registros</val>
+</name>
+<node>
+<ref refid="17708149-d894-11f1-ae9f-bc09b9551b3f"/>
+</node>
+<note>
+<val>Imagen versionada y configuración privada por entorno. Volúmenes exotic-production-uploads en /app/data y exotic-production-logs en /app/logs. Secretos montados desde archivos privados del host. El límite de RAM es del proceso completo/JVM; el heap debe dejar margen para memoria nativa.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="1771e988-d894-11f1-9709-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:ExecutionEnvironment>
+<UML:NodeItem id="1771e988-d894-11f1-9709-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 270.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>520.0</val>
+</width>
+<height>
+<val>105.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="177086dd-d894-11f1-9502-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="1771e4a5-d894-11f1-823c-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:ExecutionEnvironment id="1772caaa-d894-11f1-89e8-bc09b9551b3f">
+<name>
+<val>database · PostgreSQL 18
+CPU ≤ 0,30 vCPU | RAM ≤ 1536 MiB
+JDBC interno :5432 · sin puerto público</val>
+</name>
+<node>
+<ref refid="17708149-d894-11f1-ae9f-bc09b9551b3f"/>
+</node>
+<note>
+<val>Instancia PostgreSQL separada. Volumen exotic-production-postgres en /var/lib/postgresql (PGDATA /var/lib/postgresql/18/docker). Cuenta de aplicación sin superusuario, credenciales propias. El volumen externo permanece al reemplazar el contenedor o ejecutar down sin borrado explícito.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="1772cfe2-d894-11f1-bdde-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:ExecutionEnvironment>
+<UML:NodeItem id="1772cfe2-d894-11f1-bdde-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 440.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>520.0</val>
+</width>
+<height>
+<val>105.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="177086dd-d894-11f1-9502-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="1772caaa-d894-11f1-89e8-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:Comment id="1773b07b-d894-11f1-a8d1-bc09b9551b3f">
+<annotatedElement>
+<reflist>
+<ref refid="17708149-d894-11f1-ae9f-bc09b9551b3f"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>Persistencia fuera de los contenedores:
+exotic-production-{postgres, uploads, logs}
+Redes y secretos independientes del otro entorno.</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="1773b296-d894-11f1-adb2-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Comment>
+<UML:CommentItem id="1773b296-d894-11f1-adb2-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 558.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>520.0</val>
+</width>
+<height>
+<val>65.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="177086dd-d894-11f1-9502-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="1773b07b-d894-11f1-a8d1-bc09b9551b3f"/>
+</subject>
+</UML:CommentItem>
+<UML:Node id="177480a0-d894-11f1-8fea-bc09b9551b3f">
+<comment>
+<reflist>
+<ref refid="177805e9-d894-11f1-83f6-bc09b9551b3f"/>
+</reflist>
+</comment>
+<name>
+<val>Pruebas · staging · proyecto Compose
+exotic-staging · 3 contenedores</val>
+</name>
+<nestedNode>
+<reflist>
+<ref refid="177558b4-d894-11f1-81f9-bc09b9551b3f"/>
+<ref refid="17761b45-d894-11f1-909b-bc09b9551b3f"/>
+<ref refid="177709c6-d894-11f1-8ff0-bc09b9551b3f"/>
+</reflist>
+</nestedNode>
+<node>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+</node>
+<note>
+<val>Agrupación lógica, no contenedor adicional. Proyectos, redes, credenciales y volúmenes independientes. Backend y base por red data interna; web/backend alcanzables únicamente por la red edge de este entorno. Actualizar un servicio no exige reiniciar los otros dos ni el otro entorno.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="17748772-d894-11f1-84b8-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Node>
+<UML:NodeItem id="17748772-d894-11f1-84b8-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 700.0, 320.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>600.0</val>
+</width>
+<height>
+<val>630.0</val>
+</height>
+<children>
+<reflist>
+<ref refid="17755eed-d894-11f1-bf6c-bc09b9551b3f"/>
+<ref refid="177620b7-d894-11f1-8ce8-bc09b9551b3f"/>
+<ref refid="17770f01-d894-11f1-95f8-bc09b9551b3f"/>
+<ref refid="177807f2-d894-11f1-9fe6-bc09b9551b3f"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="177480a0-d894-11f1-8fea-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:ExecutionEnvironment id="177558b4-d894-11f1-81f9-bc09b9551b3f">
+<name>
+<val>web · Caddy + React dist
+CPU ≤ 0,03 vCPU | RAM ≤ 128 MiB
+HTTP interno :8080 · dist en solo lectura</val>
+</name>
+<node>
+<ref refid="177480a0-d894-11f1-8fea-bc09b9551b3f"/>
+</node>
+<note>
+<val>Publicación estática de FRONTEND_DIST_DIR de staging; artefacto compilado fuera de la VM. No ejecuta servidor de desarrollo ni Node/Bun en producción. Actualización independiente del backend y base.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="17755eed-d894-11f1-bf6c-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:ExecutionEnvironment>
+<UML:NodeItem id="17755eed-d894-11f1-bf6c-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 100.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>520.0</val>
+</width>
+<height>
+<val>105.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="17748772-d894-11f1-84b8-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="177558b4-d894-11f1-81f9-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:ExecutionEnvironment id="17761b45-d894-11f1-909b-bc09b9551b3f">
+<name>
+<val>backend · Java / Spring
+CPU ≤ 0,20 vCPU | RAM ≤ 1536 MiB
+HTTP interno :8080 · documentos + registros</val>
+</name>
+<node>
+<ref refid="177480a0-d894-11f1-8fea-bc09b9551b3f"/>
+</node>
+<note>
+<val>Imagen versionada y configuración privada por entorno. Volúmenes exotic-staging-uploads en /app/data y exotic-staging-logs en /app/logs. Secretos montados desde archivos privados del host. El límite de RAM es del proceso completo/JVM; el heap debe dejar margen para memoria nativa.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="177620b7-d894-11f1-8ce8-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:ExecutionEnvironment>
+<UML:NodeItem id="177620b7-d894-11f1-8ce8-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 270.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>520.0</val>
+</width>
+<height>
+<val>105.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="17748772-d894-11f1-84b8-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="17761b45-d894-11f1-909b-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:ExecutionEnvironment id="177709c6-d894-11f1-8ff0-bc09b9551b3f">
+<name>
+<val>database · PostgreSQL 18
+CPU ≤ 0,10 vCPU | RAM ≤ 768 MiB
+JDBC interno :5432 · sin puerto público</val>
+</name>
+<node>
+<ref refid="177480a0-d894-11f1-8fea-bc09b9551b3f"/>
+</node>
+<note>
+<val>Instancia PostgreSQL separada. Volumen exotic-staging-postgres en /var/lib/postgresql (PGDATA /var/lib/postgresql/18/docker). Cuenta de aplicación sin superusuario, credenciales propias. El volumen externo permanece al reemplazar el contenedor o ejecutar down sin borrado explícito.</val>
+</note>
+<presentation>
+<reflist>
+<ref refid="17770f01-d894-11f1-95f8-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:ExecutionEnvironment>
+<UML:NodeItem id="17770f01-d894-11f1-95f8-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 440.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>520.0</val>
+</width>
+<height>
+<val>105.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="17748772-d894-11f1-84b8-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="177709c6-d894-11f1-8ff0-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:Comment id="177805e9-d894-11f1-83f6-bc09b9551b3f">
+<annotatedElement>
+<reflist>
+<ref refid="177480a0-d894-11f1-8fea-bc09b9551b3f"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>Persistencia fuera de los contenedores:
+exotic-staging-{postgres, uploads, logs}
+Redes y secretos independientes del otro entorno.</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="177807f2-d894-11f1-9fe6-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Comment>
+<UML:CommentItem id="177807f2-d894-11f1-9fe6-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 558.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>520.0</val>
+</width>
+<height>
+<val>65.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="17748772-d894-11f1-84b8-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="177805e9-d894-11f1-83f6-bc09b9551b3f"/>
+</subject>
+</UML:CommentItem>
+<UML:Comment id="1778e76a-d894-11f1-ba8a-bc09b9551b3f">
+<annotatedElement>
+<reflist>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>DISCO COMPARTIDO · persistente 50 GiB · raíz 48,978 GiB
+Datos, documentos, registros, imágenes y artefactos comparten disco. Objetivo: ocupación de raíz ≤ 70 % (≈ 34 GiB); margen ≈ 15 GiB mediante alertas, rotación y limpieza. No es una cuota aplicada por Compose.
+Volúmenes externos sobreviven al contenedor; no sustituyen copias de seguridad fuera de la VM.</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="1778e94b-d894-11f1-b42e-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Comment>
+<UML:CommentItem id="1778e94b-d894-11f1-b42e-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 40.0, 980.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>1260.0</val>
+</width>
+<height>
+<val>110.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<parent>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+</parent>
+<subject>
+<ref refid="1778e76a-d894-11f1-ba8a-bc09b9551b3f"/>
+</subject>
+</UML:CommentItem>
+<UML:Node id="1779b0e9-d894-11f1-980c-bc09b9551b3f">
+<name>
+<val>CI / equipo externo
+Compilación y pruebas automatizadas
+Publica imagen backend + React dist
+Entrega independiente por servicio</val>
+</name>
+<note>
+<val>Responsabilidad externa prevista; no implica una CI ya implementada. No ejecutar compilaciones, suites ni generadores de carga en la VM productiva.</val>
+</note>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="1779b760-d894-11f1-b506-bc09b9551b3f"/>
+</reflist>
+</presentation>
+<supplierDependency>
+<reflist>
+<ref refid="17844920-d894-11f1-a284-bc09b9551b3f"/>
+</reflist>
+</supplierDependency>
+</UML:Node>
+<UML:NodeItem id="1779b760-d894-11f1-b506-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1510.0, 210.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>370.0</val>
+</width>
+<height>
+<val>165.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<subject>
+<ref refid="1779b0e9-d894-11f1-980c-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:Node id="177aab25-d894-11f1-b1db-bc09b9551b3f">
+<name>
+<val>Respaldo externo · destino por configurar
+PostgreSQL + documentos
+Copias separadas por entorno
+Retención / restauración: por validar</val>
+</name>
+<note>
+<val>Almacenamiento fuera de la VM y de su disco. Bucket y permisos pendientes de configurar. backup.sh requiere consistencia mediante pausa del backend y copia externa en producción; programar, definir retención y probar restauración.</val>
+</note>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="177ab08f-d894-11f1-a8a3-bc09b9551b3f"/>
+</reflist>
+</presentation>
+<supplierDependency>
+<reflist>
+<ref refid="1785635f-d894-11f1-97d0-bc09b9551b3f"/>
+</reflist>
+</supplierDependency>
+</UML:Node>
+<UML:NodeItem id="177ab08f-d894-11f1-a8a3-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1510.0, 740.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>370.0</val>
+</width>
+<height>
+<val>165.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<subject>
+<ref refid="177aab25-d894-11f1-b1db-bc09b9551b3f"/>
+</subject>
+</UML:NodeItem>
+<UML:Comment id="177b34d3-d894-11f1-9cf6-bc09b9551b3f">
+<annotatedElement>
+<reflist>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>LECTURA DE LA PROPUESTA
+7 contenedores = 3 producción + 3 staging + 1 proxy.
+Las agrupaciones y el disco no son contenedores.
+80/443 públicos; 8080/5432 solo internos.
+Dominios, CORS y límites Compose: pendientes.
+Una VM: recursos y fallo físico compartidos.</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="177b369f-d894-11f1-8f2b-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:Comment>
+<UML:CommentItem id="177b369f-d894-11f1-8f2b-bc09b9551b3f">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1510.0, 1000.0)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>370.0</val>
+</width>
+<height>
+<val>220.0</val>
+</height>
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<subject>
+<ref refid="177b34d3-d894-11f1-9cf6-bc09b9551b3f"/>
+</subject>
+</UML:CommentItem>
+<UML:CommunicationPath id="177ba4fe-d894-11f1-9f76-bc09b9551b3f">
+<memberEnd>
+<reflist>
+<ref refid="177baa5c-d894-11f1-8686-bc09b9551b3f"/>
+<ref refid="177bb5f2-d894-11f1-851e-bc09b9551b3f"/>
+</reflist>
+</memberEnd>
+<name>
+<val>HTTPS · web / API</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="177baa5c-d894-11f1-8686-bc09b9551b3f"/>
+<ref refid="177bb5f2-d894-11f1-851e-bc09b9551b3f"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="177bbb5d-d894-11f1-8c34-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:CommunicationPath>
+<UML:Property id="177baa5c-d894-11f1-8686-bc09b9551b3f">
+<association>
+<ref refid="177ba4fe-d894-11f1-9f76-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177ba4fe-d894-11f1-9f76-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="176e4ee2-d894-11f1-a9cb-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:Property id="177bb5f2-d894-11f1-851e-bc09b9551b3f">
+<association>
+<ref refid="177ba4fe-d894-11f1-9f76-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177ba4fe-d894-11f1-9f76-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="176feeab-d894-11f1-a86c-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:AssociationItem id="177bbb5d-d894-11f1-8c34-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<head_subject>
+<ref refid="177baa5c-d894-11f1-8686-bc09b9551b3f"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<subject>
+<ref refid="177ba4fe-d894-11f1-9f76-bc09b9551b3f"/>
+</subject>
+<tail_subject>
+<ref refid="177bb5f2-d894-11f1-851e-bc09b9551b3f"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(670.0, 100.0), (670.0, 160.0), (720.0, 160.0), (720.0, 290.0)]</val>
+</points>
+<head-connection>
+<ref refid="176e5348-d894-11f1-af1d-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="176ff696-d894-11f1-a5fd-bc09b9551b3f"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:CommunicationPath id="177c4682-d894-11f1-9977-bc09b9551b3f">
+<memberEnd>
+<reflist>
+<ref refid="177c4b93-d894-11f1-ab56-bc09b9551b3f"/>
+<ref refid="177c51d5-d894-11f1-afad-bc09b9551b3f"/>
+</reflist>
+</memberEnd>
+<name>
+<val>web</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="177c4b93-d894-11f1-ab56-bc09b9551b3f"/>
+<ref refid="177c51d5-d894-11f1-afad-bc09b9551b3f"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="177c5715-d894-11f1-974d-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:CommunicationPath>
+<UML:Property id="177c4b93-d894-11f1-ab56-bc09b9551b3f">
+<association>
+<ref refid="177c4682-d894-11f1-9977-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177c4682-d894-11f1-9977-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="176feeab-d894-11f1-a86c-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:Property id="177c51d5-d894-11f1-afad-bc09b9551b3f">
+<association>
+<ref refid="177c4682-d894-11f1-9977-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177c4682-d894-11f1-9977-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="177133d4-d894-11f1-9f46-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:AssociationItem id="177c5715-d894-11f1-974d-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<head_subject>
+<ref refid="177c4b93-d894-11f1-ab56-bc09b9551b3f"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<subject>
+<ref refid="177c4682-d894-11f1-9977-bc09b9551b3f"/>
+</subject>
+<tail_subject>
+<ref refid="177c51d5-d894-11f1-afad-bc09b9551b3f"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(650.0, 440.0), (650.0, 480.0), (550.0, 480.0), (550.0, 610.0)]</val>
+</points>
+<head-connection>
+<ref refid="176ff696-d894-11f1-a5fd-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="177139f1-d894-11f1-b87d-bc09b9551b3f"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:CommunicationPath id="177d42b8-d894-11f1-8b2a-bc09b9551b3f">
+<memberEnd>
+<reflist>
+<ref refid="177d4785-d894-11f1-b5e4-bc09b9551b3f"/>
+<ref refid="177d4daf-d894-11f1-a97d-bc09b9551b3f"/>
+</reflist>
+</memberEnd>
+<name>
+<val>API</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="177d4785-d894-11f1-b5e4-bc09b9551b3f"/>
+<ref refid="177d4daf-d894-11f1-a97d-bc09b9551b3f"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="177d5363-d894-11f1-8d6c-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:CommunicationPath>
+<UML:Property id="177d4785-d894-11f1-b5e4-bc09b9551b3f">
+<association>
+<ref refid="177d42b8-d894-11f1-8b2a-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177d42b8-d894-11f1-8b2a-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="176feeab-d894-11f1-a86c-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:Property id="177d4daf-d894-11f1-a97d-bc09b9551b3f">
+<association>
+<ref refid="177d42b8-d894-11f1-8b2a-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177d42b8-d894-11f1-8b2a-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="1771e4a5-d894-11f1-823c-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:AssociationItem id="177d5363-d894-11f1-8d6c-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<head_subject>
+<ref refid="177d4785-d894-11f1-b5e4-bc09b9551b3f"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<subject>
+<ref refid="177d42b8-d894-11f1-8b2a-bc09b9551b3f"/>
+</subject>
+<tail_subject>
+<ref refid="177d4daf-d894-11f1-a97d-bc09b9551b3f"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(550.0, 440.0), (550.0, 460.0), (15.0, 460.0), (15.0, 832.0), (80.0, 832.0)]</val>
+</points>
+<head-connection>
+<ref refid="176ff696-d894-11f1-a5fd-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="1771e988-d894-11f1-9709-bc09b9551b3f"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:CommunicationPath id="177e8273-d894-11f1-b7f6-bc09b9551b3f">
+<memberEnd>
+<reflist>
+<ref refid="177e87c4-d894-11f1-9ac7-bc09b9551b3f"/>
+<ref refid="177e8e0b-d894-11f1-bdd3-bc09b9551b3f"/>
+</reflist>
+</memberEnd>
+<name>
+<val>JDBC :5432</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="177e87c4-d894-11f1-9ac7-bc09b9551b3f"/>
+<ref refid="177e8e0b-d894-11f1-bdd3-bc09b9551b3f"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="177e9334-d894-11f1-a765-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:CommunicationPath>
+<UML:Property id="177e87c4-d894-11f1-9ac7-bc09b9551b3f">
+<association>
+<ref refid="177e8273-d894-11f1-b7f6-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177e8273-d894-11f1-b7f6-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="1771e4a5-d894-11f1-823c-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:Property id="177e8e0b-d894-11f1-bdd3-bc09b9551b3f">
+<association>
+<ref refid="177e8273-d894-11f1-b7f6-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177e8273-d894-11f1-b7f6-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="1772caaa-d894-11f1-89e8-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:AssociationItem id="177e9334-d894-11f1-a765-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<head_subject>
+<ref refid="177e87c4-d894-11f1-9ac7-bc09b9551b3f"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>False</val>
+</orthogonal>
+<subject>
+<ref refid="177e8273-d894-11f1-b7f6-bc09b9551b3f"/>
+</subject>
+<tail_subject>
+<ref refid="177e8e0b-d894-11f1-bdd3-bc09b9551b3f"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(340.0, 885.0), (340.0, 950.0)]</val>
+</points>
+<head-connection>
+<ref refid="1771e988-d894-11f1-9709-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="1772cfe2-d894-11f1-bdde-bc09b9551b3f"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:CommunicationPath id="177fb982-d894-11f1-a229-bc09b9551b3f">
+<memberEnd>
+<reflist>
+<ref refid="177fbee3-d894-11f1-a377-bc09b9551b3f"/>
+<ref refid="177fc570-d894-11f1-b36d-bc09b9551b3f"/>
+</reflist>
+</memberEnd>
+<name>
+<val>web</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="177fbee3-d894-11f1-a377-bc09b9551b3f"/>
+<ref refid="177fc570-d894-11f1-b36d-bc09b9551b3f"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="177fca84-d894-11f1-a5dc-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:CommunicationPath>
+<UML:Property id="177fbee3-d894-11f1-a377-bc09b9551b3f">
+<association>
+<ref refid="177fb982-d894-11f1-a229-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177fb982-d894-11f1-a229-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="176feeab-d894-11f1-a86c-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:Property id="177fc570-d894-11f1-b36d-bc09b9551b3f">
+<association>
+<ref refid="177fb982-d894-11f1-a229-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="177fb982-d894-11f1-a229-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="177558b4-d894-11f1-81f9-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:AssociationItem id="177fca84-d894-11f1-a5dc-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<head_subject>
+<ref refid="177fbee3-d894-11f1-a377-bc09b9551b3f"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<subject>
+<ref refid="177fb982-d894-11f1-a229-bc09b9551b3f"/>
+</subject>
+<tail_subject>
+<ref refid="177fc570-d894-11f1-b36d-bc09b9551b3f"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(820.0, 440.0), (820.0, 480.0), (1200.0, 480.0), (1200.0, 610.0)]</val>
+</points>
+<head-connection>
+<ref refid="176ff696-d894-11f1-a5fd-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="17755eed-d894-11f1-bf6c-bc09b9551b3f"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:CommunicationPath id="17810192-d894-11f1-981a-bc09b9551b3f">
+<memberEnd>
+<reflist>
+<ref refid="178106af-d894-11f1-bcf5-bc09b9551b3f"/>
+<ref refid="17810dc0-d894-11f1-a75e-bc09b9551b3f"/>
+</reflist>
+</memberEnd>
+<name>
+<val>API</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="178106af-d894-11f1-bcf5-bc09b9551b3f"/>
+<ref refid="17810dc0-d894-11f1-a75e-bc09b9551b3f"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="178112e3-d894-11f1-a5f8-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:CommunicationPath>
+<UML:Property id="178106af-d894-11f1-bcf5-bc09b9551b3f">
+<association>
+<ref refid="17810192-d894-11f1-981a-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="17810192-d894-11f1-981a-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="176feeab-d894-11f1-a86c-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:Property id="17810dc0-d894-11f1-a75e-bc09b9551b3f">
+<association>
+<ref refid="17810192-d894-11f1-981a-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="17810192-d894-11f1-981a-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="17761b45-d894-11f1-909b-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:AssociationItem id="178112e3-d894-11f1-a5f8-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<head_subject>
+<ref refid="178106af-d894-11f1-bcf5-bc09b9551b3f"/>
+</head_subject>
+<horizontal>
+<val>1</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<subject>
+<ref refid="17810192-d894-11f1-981a-bc09b9551b3f"/>
+</subject>
+<tail_subject>
+<ref refid="17810dc0-d894-11f1-a75e-bc09b9551b3f"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(930.0, 410.0), (1325.0, 410.0), (1325.0, 832.0), (1260.0, 832.0)]</val>
+</points>
+<head-connection>
+<ref refid="176ff696-d894-11f1-a5fd-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="177620b7-d894-11f1-8ce8-bc09b9551b3f"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:CommunicationPath id="17824413-d894-11f1-ae77-bc09b9551b3f">
+<memberEnd>
+<reflist>
+<ref refid="17824925-d894-11f1-bd14-bc09b9551b3f"/>
+<ref refid="17824f68-d894-11f1-9f07-bc09b9551b3f"/>
+</reflist>
+</memberEnd>
+<name>
+<val>JDBC :5432</val>
+</name>
+<ownedEnd>
+<reflist>
+<ref refid="17824925-d894-11f1-bd14-bc09b9551b3f"/>
+<ref refid="17824f68-d894-11f1-9f07-bc09b9551b3f"/>
+</reflist>
+</ownedEnd>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<package>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="1782548f-d894-11f1-bf23-bc09b9551b3f"/>
+</reflist>
+</presentation>
+</UML:CommunicationPath>
+<UML:Property id="17824925-d894-11f1-bd14-bc09b9551b3f">
+<association>
+<ref refid="17824413-d894-11f1-ae77-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="17824413-d894-11f1-ae77-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="17761b45-d894-11f1-909b-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:Property id="17824f68-d894-11f1-9f07-bc09b9551b3f">
+<association>
+<ref refid="17824413-d894-11f1-ae77-bc09b9551b3f"/>
+</association>
+<owningAssociation>
+<ref refid="17824413-d894-11f1-ae77-bc09b9551b3f"/>
+</owningAssociation>
+<type>
+<ref refid="177709c6-d894-11f1-8ff0-bc09b9551b3f"/>
+</type>
+</UML:Property>
+<UML:AssociationItem id="1782548f-d894-11f1-bf23-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<head_subject>
+<ref refid="17824925-d894-11f1-bd14-bc09b9551b3f"/>
+</head_subject>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>False</val>
+</orthogonal>
+<subject>
+<ref refid="17824413-d894-11f1-ae77-bc09b9551b3f"/>
+</subject>
+<tail_subject>
+<ref refid="17824f68-d894-11f1-9f07-bc09b9551b3f"/>
+</tail_subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(1000.0, 885.0), (1000.0, 950.0)]</val>
+</points>
+<head-connection>
+<ref refid="177620b7-d894-11f1-8ce8-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="17770f01-d894-11f1-95f8-bc09b9551b3f"/>
+</tail-connection>
+</UML:AssociationItem>
+<UML:Dependency id="17844920-d894-11f1-a284-bc09b9551b3f">
+<client>
+<reflist>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+</reflist>
+</client>
+<name>
+<val>artefactos</val>
+</name>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<presentation>
+<reflist>
+<ref refid="178450e8-d894-11f1-9da1-bc09b9551b3f"/>
+</reflist>
+</presentation>
+<supplier>
+<reflist>
+<ref refid="1779b0e9-d894-11f1-980c-bc09b9551b3f"/>
+</reflist>
+</supplier>
+</UML:Dependency>
+<UML:DependencyItem id="178450e8-d894-11f1-9da1-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>False</val>
+</orthogonal>
+<subject>
+<ref refid="17844920-d894-11f1-a284-bc09b9551b3f"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(1510.0, 295.0), (1340.0, 305.0)]</val>
+</points>
+<head-connection>
+<ref refid="1779b760-d894-11f1-b506-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+</tail-connection>
+</UML:DependencyItem>
+<UML:Dependency id="1785635f-d894-11f1-97d0-bc09b9551b3f">
+<client>
+<reflist>
+<ref refid="176f2157-d894-11f1-abf8-bc09b9551b3f"/>
+</reflist>
+</client>
+<name>
+<val>copias</val>
+</name>
+<owningPackage>
+<ref refid="176e4081-d894-11f1-b519-bc09b9551b3f"/>
+</owningPackage>
+<presentation>
+<reflist>
+<ref refid="17856a28-d894-11f1-9c94-bc09b9551b3f"/>
+</reflist>
+</presentation>
+<supplier>
+<reflist>
+<ref refid="177aab25-d894-11f1-b1db-bc09b9551b3f"/>
+</reflist>
+</supplier>
+</UML:Dependency>
+<UML:DependencyItem id="17856a28-d894-11f1-9c94-bc09b9551b3f">
+<diagram>
+<ref refid="176e4884-d894-11f1-8eb8-bc09b9551b3f"/>
+</diagram>
+<horizontal>
+<val>False</val>
+</horizontal>
+<orthogonal>
+<val>False</val>
+</orthogonal>
+<subject>
+<ref refid="1785635f-d894-11f1-97d0-bc09b9551b3f"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)</val>
+</matrix>
+<points>
+<val>[(1510.0, 822.0), (1340.0, 822.0)]</val>
+</points>
+<head-connection>
+<ref refid="177ab08f-d894-11f1-a8a3-bc09b9551b3f"/>
+</head-connection>
+<tail-connection>
+<ref refid="176f2679-d894-11f1-a26c-bc09b9551b3f"/>
+</tail-connection>
+</UML:DependencyItem>
 </model>
 </gaphor>

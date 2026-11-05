@@ -1,0 +1,8 @@
+# Private VM rehearsal for either environment. Only the shared private edge
+# publishes loopback ports; the three application containers publish none.
+services:
+  backend:
+    healthcheck:
+      # Initial startup under the deliberately small staging CPU quota can be slow.
+      start_period: 300s
+      retries: 12

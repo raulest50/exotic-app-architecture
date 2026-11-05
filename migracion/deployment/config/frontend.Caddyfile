@@ -1,0 +1,48 @@
+{
+	admin off
+	auto_https off
+	# The web container has a read-only root filesystem and no configuration state.
+	persist_config off
+}
+
+:8080 {
+	# Fixed roots only: public hostname gets the public API build. SSH/localhost
+	# keeps its own artifact and API tunnel. Host never becomes a filesystem path.
+	map {host} {frontend_root} {
+		{$PUBLIC_FRONTEND_HOST:unconfigured.invalid} /srv-public
+		default /srv
+	}
+	root * {frontend_root}
+	encode zstd gzip
+
+	@api path /api /api/*
+	@static_files path /assets /assets/* *.js *.mjs *.css *.map *.json *.ico *.png *.jpg *.jpeg *.gif *.svg *.webp *.avif *.woff *.woff2 *.ttf *.otf *.wasm *.webmanifest *.txt *.xml *.pdf
+	@vite_assets path /assets/*
+
+	# The API belongs to its own domain. Never answer an API request with index.html.
+	handle @api {
+		respond "API requests must use the API domain." 404
+	}
+
+	handle /healthz {
+		respond "ok" 200
+	}
+
+	# Missing static resources must remain 404s rather than receive the SPA shell.
+	handle @static_files {
+		header Cache-Control "no-cache"
+		# /assets contains the fingerprinted assets emitted by the Vite build.
+		# Apply immutable caching only to successful file responses, never a 404.
+		header @vite_assets Cache-Control "public, max-age=31536000, immutable" {
+			match status 200 206 304
+		}
+		file_server
+	}
+
+	handle {
+		# Includes direct /index.html requests and all client-side route fallbacks.
+		header Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}

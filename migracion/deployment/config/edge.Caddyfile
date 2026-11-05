@@ -1,0 +1,14 @@
+{
+	admin off
+	# Publish TCP only; HTTP/3 is intentionally not advertised or enabled.
+	servers {
+		protocols h1 h2
+		strict_sni_host on
+	}
+}
+
+import /etc/caddy/edge.loopback.Caddyfile
+
+# The mounted private directory decides which environments are activated.
+# config/sites/*.caddy.example is documentation and is never imported here.
+import /etc/caddy/sites/*.caddy
