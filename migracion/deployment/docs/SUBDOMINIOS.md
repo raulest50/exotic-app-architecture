@@ -42,8 +42,11 @@ Los resultados finales de esta preparacion se agregan al final del documento.
   desconocido sin configuracion ya no selecciona produccion silenciosamente.
 - Son variables publicas de compilacion. Cambiar un `.env` del servidor no
   cambia un `dist` ya generado. Las plantillas del frontend son
-  `.env.staging.example` y `.env.production.example`; nunca poner secretos en
-  variables `VITE_`.
+  `env-examples/.env.staging.example` y `env-examples/.env.production.example`;
+  cada una incluye su comando de compilacion con `bun --env-file=...`.
+  Nunca poner secretos en variables `VITE_`.
+  La ampliacion posterior admite tambien una URL base con prefijo para las
+  rutas por IP; vease [ACCESO_IP.md](ACCESO_IP.md).
 - Hay un artefacto para SSH, sin esas variables, y uno publico por entorno.
   Cada web monta `/srv` y `/srv-public` como solo lectura. Caddy usa un mapa
   fijo del hostname `PUBLIC_FRONTEND_HOST` para elegir el artefacto; la
@@ -65,6 +68,10 @@ La release preparada es
 commit `80296d2` mas unicamente el cambio CORS y frontend del commit `9a3d63f`
 mas los dos archivos de configuracion. No incorpora los cambios locales V1 ni
 otros cambios sin commit. Manifiesto: `release-manifest.json` de esa release.
+El acceso IP posterior utiliza un frontend nuevo en
+`/srv/exotic/releases/20261105-ip-paths-fe9a3d63f`; el backend conserva la imagen
+anterior. Sus cinco artefactos incluyen SSH, ambos dominios y ambas rutas IP.
+La evidencia siguiente conserva la comprobacion original de subdominios.
 
 Mientras DNS esta pendiente, los archivos privados de aplicaciones conservan
 `APP_COMPATIBILITY_CONFIRMED=false` y metadata de acceso por localhost. Los

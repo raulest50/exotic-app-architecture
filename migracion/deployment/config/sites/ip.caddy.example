@@ -1,0 +1,42 @@
+# INACTIVE EXAMPLE. Copy as ip.caddy into the private EDGE_SITES_DIR to enable.
+# The IP certificate is issued and renewed by Caddy; DNS is not needed for it.
+https://{$VM_PUBLIC_IP} {
+	tls {
+		issuer acme {
+			dir https://acme-v02.api.letsencrypt.org/directory
+			profile shortlived
+		}
+	}
+	encode zstd gzip
+	log
+
+	redir /prod /prod/ 308
+	redir /staging /staging/ 308
+	redir /prod/backend /prod/backend/ 308
+	redir /staging/backend /staging/backend/ 308
+
+	# Strip only the deployment prefix. Preserve every original API path.
+	handle_path /prod/backend/* {
+		reverse_proxy backend-production:8080 {
+			import private_forwarding
+		}
+	}
+	handle_path /staging/backend/* {
+		reverse_proxy backend-staging:8080 {
+			import private_forwarding
+		}
+	}
+	handle_path /prod/* {
+		reverse_proxy web-production:8080 {
+			import private_forwarding
+		}
+	}
+	handle_path /staging/* {
+		reverse_proxy web-staging:8080 {
+			import private_forwarding
+		}
+	}
+	handle {
+		respond "Use /prod/ or /staging/." 404
+	}
+}

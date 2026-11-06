@@ -1,9 +1,10 @@
 {
 	admin off
+	# IP clients commonly omit SNI; select their public IP certificate explicitly.
+	default_sni {$VM_PUBLIC_IP}
 	# Publish TCP only; HTTP/3 is intentionally not advertised or enabled.
 	servers {
 		protocols h1 h2
-		strict_sni_host on
 	}
 }
 

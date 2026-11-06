@@ -18,15 +18,21 @@ aparte; los listeners publicos 80/443 ya estan configurados.
 En `exotic-app-frontend/src/api/EndPointsURL.tsx`, `getDomain()` y
 `getEnvironment()` comparten un resolver. Si se configura cualquiera de
 `VITE_API_BASE_URL` o `VITE_APP_ENV`, ambas son obligatorias. La URL debe ser
-un origen HTTPS sin ruta, credenciales, query ni fragmento; HTTP solo se acepta
+una URL base HTTPS, opcionalmente con prefijo de ruta y sin credenciales,
+query ni fragmento; HTTP solo se acepta
 para localhost/127.0.0.1. El entorno admite local, staging o production.
 Sin variables se conservan fallbacks para localhost y los dos hostnames exactos
 actuales de Render. Un host desconocido produce un error, sin seleccionar
-produccion por defecto. Las plantillas `.env.staging.example` y
-`.env.production.example` solo contienen valores publicos.
+produccion por defecto. Las plantillas del frontend
+`env-examples/.env.staging.example` y `env-examples/.env.production.example`
+solo contienen valores publicos y comentarios de uso. No se cargan
+automaticamente; se pasan explicitamente al comando Bun con `--env-file`.
 
 Establecer una variable en Compose no cambia el JavaScript ya compilado. Las
 variables `VITE_` se fijaron al construir cada artefacto fuera de la VM.
+El acceso IP agrega builds con `--base=/prod/` y `--base=/staging/`, Router
+basename y claves de sesion por ruta. Su API usa el prefijo correspondiente
+`/prod/backend` o `/staging/backend`, conservando todos los endpoints actuales.
 
 La propuesta usa **un dominio web y un dominio API distintos por entorno**.
 `PUBLIC_DOMAIN` identifica la web y `API_PUBLIC_DOMAIN` su API. El proxy común
@@ -50,6 +56,9 @@ solo lectura. Un mapa fijo por `PUBLIC_FRONTEND_HOST` selecciona el segundo;
 los demas hosts reciben el primero. No se construyen rutas desde Host. Se
 comprobaron los assets y la referencia API real de cada build publico; la
 verificacion del navegador sobre DNS/HTTPS publico queda pendiente.
+El tercer montaje `/srv-ip` sirve el artefacto por ruta cuando Host coincide
+con `IP_FRONTEND_HOST`. La configuracion y evidencia de este acceso estan en
+[ACCESO_IP.md](ACCESO_IP.md); no modifica las listas CORS de los backends.
 
 La base local acordada es Bun **1.3.14**, `bun.lock` y el build de Vite usado
 por Render. El `Dockerfile` actual del frontend usa `oven/bun:1`, copia

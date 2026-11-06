@@ -175,6 +175,7 @@ como artefactos cuando ayuden a preservar la intención.
 | `migracion/deployment/config/frontend.Caddyfile` | Publicación estática del `dist` y fallback de la SPA. |
 | `migracion/deployment/config/sites/production.caddy.example` | Ejemplo de routing web/API de producción, conservando rutas del backend. |
 | `migracion/deployment/config/sites/staging.caddy.example` | Ejemplo de routing web/API de staging, conservando rutas del backend. |
+| `migracion/deployment/config/sites/ip.caddy.example` | Acceso HTTPS adicional por IP, prefijos /prod y /staging y emisor ACME propio de la IP. |
 | `migracion/deployment/postgres/init-app-user.sh` | Inicialización controlada del rol/base de aplicación; no sustituye una restauración ni modifica por sí solo un cluster existente. |
 | `migracion/deployment/postgres/entrypoint.sh` | Copia privada en tmpfs del secreto que debe leer el usuario PostgreSQL durante la inicialización. |
 | `migracion/deployment/scripts/common.sh` | Funciones compartidas de validación y selección de entorno/contexto. |
@@ -185,6 +186,7 @@ como artefactos cuando ayuden a preservar la intención.
 | `migracion/deployment/scripts/backup.sh` | Obtención controlada de respaldos; no constituye por sí misma una prueba de recuperación. |
 | `migracion/deployment/docs/COMPATIBILIDAD.md` | Bloqueos y verificaciones de aplicación antes de habilitar la publicación. |
 | `migracion/deployment/docs/SUBDOMINIOS.md` | Cuatro nombres acordados, preparacion aplicada, evidencia y entrega DNS. |
+| `migracion/deployment/docs/ACCESO_IP.md` | Mensaje DNS y operacion del acceso adicional por rutas IP. |
 | `migracion/deployment/docs/GAPHOR.md` | Correspondencia entre origen y destino modelados; presupuesto del 70 % y límites pendientes de aplicar a la configuración. |
 | `migracion/deployment/docs/RECUPERACION.md` | Restauración, recuperación y criterios de reversión. |
 | `migracion/deployment/.gitignore` | Exclusión de parámetros locales, secretos y artefactos que no deben versionarse. |
@@ -261,5 +263,19 @@ Si se representan artefactos de codigo, las rutas concretas modificadas son
 `exotic-app-frontend/src/api/EndPointsURL.tsx`,
 `exotic-app-frontend/src/vite-env.d.ts` y
 `exotic-app-backend/src/main/java/exotic/app/planta/config/CorsConfig.java`.
-Las nuevas plantillas publicas son `exotic-app-frontend/.env.staging.example`
-y `exotic-app-frontend/.env.production.example`. No modelar valores secretos.
+Las plantillas publicas estan agrupadas en
+`exotic-app-frontend/env-examples/.env.staging.example` y
+`exotic-app-frontend/env-examples/.env.production.example`. No modelar valores
+secretos. La carpeta organiza ejemplos; no cambia la carga de configuracion.
+
+Ampliacion posterior autorizada el mismo dia: agregar a la nota del edge las
+rutas HTTPS `34.30.31.30/prod/` y `/staging/`, con sus API bajo
+`/prod/backend` y `/staging/backend`. Cada web monta un tercer artefacto en
+`/srv-ip`, compilado con su base Vite y basename de Router. El codigo nuevo
+`exotic-app-frontend/src/utils/deploymentPaths.ts` centraliza rutas y claves de
+almacenamiento por base; las plantillas son
+`exotic-app-frontend/env-examples/.env.ip-production.example` y
+`exotic-app-frontend/env-examples/.env.ip-staging.example`. No cambia el numero de contenedores, datos,
+contratos originales del backend ni limites. El acceso IP comparte origen y
+no se debe modelar como frontera de seguridad entre ambientes. Se conservan
+los cuatro nombres y SSH. Pendiente sincronizacion manual de estas notas.

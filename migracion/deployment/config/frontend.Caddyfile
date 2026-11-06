@@ -6,10 +6,10 @@
 }
 
 :8080 {
-	# Fixed roots only: public hostname gets the public API build. SSH/localhost
-	# keeps its own artifact and API tunnel. Host never becomes a filesystem path.
+	# Fixed roots for domain, IP-prefix and SSH builds. Host is never a file path.
 	map {host} {frontend_root} {
 		{$PUBLIC_FRONTEND_HOST:unconfigured.invalid} /srv-public
+		{$IP_FRONTEND_HOST:unconfigured-ip.invalid} /srv-ip
 		default /srv
 	}
 	root * {frontend_root}

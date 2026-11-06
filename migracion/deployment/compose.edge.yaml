@@ -20,6 +20,7 @@ services:
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=32m
     environment:
+      VM_PUBLIC_IP: ${VM_PUBLIC_IP:?Define the public IPv4 address}
       STAGING_WEB_DOMAIN: ${STAGING_WEB_DOMAIN:?Define STAGING_WEB_DOMAIN}
       STAGING_API_DOMAIN: ${STAGING_API_DOMAIN:?Define STAGING_API_DOMAIN}
       PRODUCTION_WEB_DOMAIN: ${PRODUCTION_WEB_DOMAIN:?Define PRODUCTION_WEB_DOMAIN}

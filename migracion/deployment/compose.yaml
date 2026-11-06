@@ -10,6 +10,8 @@ x-deployment:
   FRONTEND_DIST_DIR: "${FRONTEND_DIST_DIR:?Provide an absolute versioned dist directory}"
   PUBLIC_FRONTEND_DIST_DIR: "${PUBLIC_FRONTEND_DIST_DIR:-${FRONTEND_DIST_DIR}}"
   PUBLIC_FRONTEND_HOST: "${PUBLIC_FRONTEND_HOST:-unconfigured.invalid}"
+  IP_FRONTEND_DIST_DIR: "${IP_FRONTEND_DIST_DIR:-${FRONTEND_DIST_DIR}}"
+  IP_FRONTEND_HOST: "${IP_FRONTEND_HOST:-unconfigured-ip.invalid}"
   POSTGRES_ADMIN_PASSWORD_FILE: "${POSTGRES_ADMIN_PASSWORD_FILE:?Provide the private administrator password file}"
   DB_PASSWORD_FILE: "${DB_PASSWORD_FILE:?Provide the private application password file}"
   JWT_SECRET_FILE: "${JWT_SECRET_FILE:?Provide the private JWT secret file}"
@@ -183,6 +185,7 @@ services:
     user: "1000:1000"
     environment:
       PUBLIC_FRONTEND_HOST: "${PUBLIC_FRONTEND_HOST:-unconfigured.invalid}"
+      IP_FRONTEND_HOST: "${IP_FRONTEND_HOST:-unconfigured-ip.invalid}"
     restart: unless-stopped
     read_only: true
     cpus: "${WEB_CPU_LIMIT:-0.04}"
@@ -216,6 +219,12 @@ services:
       - type: bind
         source: ${PUBLIC_FRONTEND_DIST_DIR:-${FRONTEND_DIST_DIR}}
         target: /srv-public
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${IP_FRONTEND_DIST_DIR:-${FRONTEND_DIST_DIR}}
+        target: /srv-ip
         read_only: true
         bind:
           create_host_path: false

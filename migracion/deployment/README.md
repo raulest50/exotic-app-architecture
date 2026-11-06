@@ -8,6 +8,9 @@ pendientes. Falta confirmar que la IP de Google Cloud este reservada.
 El registro operativo está en [DESPLIEGUE_INICIAL.md](docs/DESPLIEGUE_INICIAL.md).
 La preparacion de los cuatro nombres publicos y la entrega para el administrador
 DNS estan en [SUBDOMINIOS.md](docs/SUBDOMINIOS.md).
+El acceso HTTPS adicional por IP mediante `/prod/` y `/staging/` esta activo
+y verificado con certificado publico. Su funcionamiento, junto con el
+mensaje para el propietario del dominio, esta en [ACCESO_IP.md](docs/ACCESO_IP.md).
 Esta entrega incluye los cambios de seleccion API/entorno en frontend y CORS
 configurable en backend, sin modificar Render. Los archivos privados mantienen
 `APP_COMPATIBILITY_CONFIRMED=false`; `stack.sh` rechaza ese estado. `pilot.sh`
@@ -96,6 +99,7 @@ frontend versionado, ambos construidos fuera de producción.
 | Certificados y estado ACME | `exotic-edge-caddy-data`, montado en `/data` |
 | Configuración persistente de edge | `exotic-edge-caddy-config`, montado en `/config` |
 | Frontend compilado | Artefacto SSH en `/srv` y publico en `/srv-public`, ambos solo lectura |
+| Frontend por rutas IP | Artefacto propio de cada ambiente en `/srv-ip`, solo lectura |
 
 Los volúmenes tienen nombres estables y son **externos**: se crean explícitamente
 y se reutilizan al recrear contenedores. `stack.sh down` no los borra. No montar

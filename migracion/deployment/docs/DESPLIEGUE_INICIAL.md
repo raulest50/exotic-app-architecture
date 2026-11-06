@@ -17,6 +17,10 @@ confirmacion de reserva de IP siguen pendientes. La evidencia actual y el
 Image ID estan en [SUBDOMINIOS.md](SUBDOMINIOS.md). Los datos y resultados del
 4 de noviembre que siguen se conservan como registro historico.
 
+Ampliacion posterior del mismo dia: acceso HTTPS por IP activo en `/prod/` y
+`/staging/`, certificado publico validado y backend/bases sin reiniciar. La
+release frontend vigente y su evidencia estan en [ACCESO_IP.md](ACCESO_IP.md).
+
 ## Alcance y versiones
 
 - VM Google Compute Engine `vm-produccion`, `34.30.31.30`, Debian 13.7,
