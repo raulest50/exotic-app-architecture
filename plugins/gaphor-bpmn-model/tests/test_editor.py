@@ -12,13 +12,14 @@ from gaphor.services.modelinglanguage import ModelingLanguageService
 from gaphor.services.undomanager import UndoManager
 
 from gaphor_bpmn_model import model
+from gaphor_bpmn_model import diagram as view
 from gaphor_bpmn_model.editor import BPMNEditor, read_text
 from gaphor_bpmn_model.language import BPMNLanguage
 from gaphor_bpmn_model.operations import (
     create_collaboration, create_flow, create_lane, create_node, create_participant,
     snapshot, update_element,
 )
-from gaphor_bpmn_model.service import BPMNPropertyPage, BPMNService, selected_collaboration
+from gaphor_bpmn_model.service import BPMNGatewayPropertyPage, BPMNPropertyPage, BPMNService, selected_collaboration
 
 
 class EditorTests(unittest.TestCase):
@@ -198,6 +199,39 @@ class EditorTests(unittest.TestCase):
         service.shutdown()
         self.assertEqual(menu.get_n_items(), 0)
         self.assertIsNone(page.construct())
+
+    def test_gateway_marker_checkbox_is_per_view_undoable_and_disabled_for_parallel(self):
+        subject = self.node(model.BPMNGateway)
+        before = snapshot(subject)
+        with Transaction(self.events):
+            item = self.diagram.create(view.BPMNGatewayItem, subject=subject)
+            other_view = self.diagram.create(view.BPMNGatewayItem, subject=subject)
+        page = BPMNGatewayPropertyPage(item, self.events)
+        try:
+            self.assertIsNotNone(page.construct())
+            self.assertTrue(page.marker.get_active())
+            self.assertTrue(page.marker.get_sensitive())
+            self.undo.clear_undo_stack()
+            page.marker.set_active(False)
+            self.assertFalse(item.isMarkerVisible)
+            self.assertTrue(other_view.isMarkerVisible)
+            self.assertEqual(snapshot(subject), before)
+            self.undo.undo_transaction()
+            self.assertTrue(item.isMarkerVisible)
+            self.assertTrue(page.marker.get_active())
+            self.undo.redo_transaction()
+            self.assertFalse(item.isMarkerVisible)
+            self.assertFalse(page.marker.get_active())
+
+            with Transaction(self.events):
+                subject.gatewayKind = "PARALLEL"
+            self.assertFalse(page.marker.get_sensitive())
+            self.assertFalse(item.isMarkerVisible)
+            self.undo.undo_transaction()
+            self.assertEqual(subject.gatewayKind, "EXCLUSIVE")
+            self.assertTrue(page.marker.get_sensitive())
+        finally:
+            page.close()
 
     def test_service_new_diagram_reuses_selected_collaboration(self):
         service = self.service()

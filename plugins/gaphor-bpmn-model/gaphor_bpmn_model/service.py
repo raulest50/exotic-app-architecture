@@ -9,11 +9,12 @@ from gaphor.core import Transaction, action, event_handler
 from gaphor.core.modeling import Presentation
 from gaphor.core.modeling.event import ElementDeleted, ElementUpdated, ModelFlushed, ModelReady
 from gaphor.diagram.event import DiagramItemPlaced, DiagramOpened, DiagramSelectionChanged
-from gaphor.diagram.propertypages import PropertyPageBase, PropertyPages
+from gaphor.diagram.propertypages import PropertyPageBase, PropertyPages, unsubscribe_all_on_destroy
 from gaphor.event import Notification
 from gaphor.ui.event import CurrentDiagramChanged, ModelSelectionChanged
 
 from . import SUPPORTED_GAPHOR, model
+from .diagram import BPMNGatewayItem
 from .editor import BPMNEditor, button, label
 from .operations import create_collaboration, delete_participant as delete_participant_model
 from .validation import validate
@@ -291,3 +292,42 @@ class BPMNPropertyPage(PropertyPageBase):
         if model.deletion_dependencies(self.subject):
             box.append(label("Para borrar este elemento, resuelve primero sus referencias. Para retirar un pool con su proceso, usa Eliminar participante BPMN… en el menú BPMN."))
         return box
+
+
+@PropertyPages.register(BPMNGatewayItem)
+class BPMNGatewayPropertyPage(PropertyPageBase):
+    order = 285
+
+    def __init__(self, item, event_manager):
+        self.item, self.events = item, event_manager
+        self.watcher = item.watcher()
+        self.marker = None
+
+    def construct(self):
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        box.add_css_class("propertypage")
+        box.append(label("Representación BPMN"))
+        self.marker = Gtk.CheckButton(label="Mostrar X en esta vista")
+        self._refresh()
+        self.marker.connect("toggled", self._marker_changed)
+        box.append(self.marker)
+        self.watcher.watch("isMarkerVisible", self._refresh)
+        self.watcher.watch("subject[BPMNGateway].gatewayKind", self._refresh)
+        return unsubscribe_all_on_destroy(box, self.watcher)
+
+    def _refresh(self, event=None):
+        if self.marker is not None:
+            self.marker.set_active(self.item.isMarkerVisible)
+            subject = self.item.subject
+            self.marker.set_sensitive(isinstance(subject, model.BPMNGateway) and subject.gatewayKind == "EXCLUSIVE")
+
+    def _marker_changed(self, button):
+        active = button.get_active()
+        if active == self.item.isMarkerVisible:
+            return
+        with Transaction(self.events):
+            self.item.isMarkerVisible = active
+
+    def close(self):
+        self.watcher.unsubscribe_all()
+        self.marker = None

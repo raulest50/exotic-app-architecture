@@ -4,8 +4,9 @@ import io
 import os
 from pathlib import Path
 import unittest
+from xml.etree import ElementTree
 
-from gi.repository import Gtk
+from gi.repository import Gdk, GdkPixbuf, Graphene, Gsk, Gtk
 from gaphas.connector import Connector as ConnectorAspect
 from gaphor import UML
 from gaphor.core import Transaction
@@ -85,6 +86,217 @@ class DiagramTests(unittest.TestCase):
         self.assertIsInstance(native.element, BPMNCollaboration)
         self.assertIsNotNone(primary_process(native))
         self.assertTrue(any(isinstance(i, view.BPMNParticipantItem) for i in native.get_all_items()))
+
+    def test_toolbox_icons_resolve_distinct_packaged_graphics(self):
+        theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
+        first, second = BPMNLanguage(), BPMNLanguage()
+        definition = first.toolbox_definition
+        registered_paths = theme.get_search_path()
+        for language in (second, first, second):
+            self.assertTrue(language.toolbox_definition)
+        self.assertEqual(theme.get_search_path(), registered_paths)
+
+        icons = Path(view.__file__).resolve().parent / "icons"
+        self.assertEqual(sum(Path(path).resolve() == icons for path in registered_paths), 1)
+        tools = [tool for section in definition for tool in section.tools
+                 if tool.id.startswith("bpmn-")]
+        self.assertEqual(len(tools), 15)
+        self.assertEqual(len({tool.icon_name for tool in tools}), len(tools))
+
+        rendered = {}
+        for tool in tools:
+            with self.subTest(tool=tool.id):
+                self.assertTrue(theme.has_icon(tool.icon_name))
+                icon = theme.lookup_icon(tool.icon_name, [], 16, 1,
+                                         Gtk.TextDirection.LTR, Gtk.IconLookupFlags.FORCE_SYMBOLIC)
+                self.assertTrue(icon.is_symbolic())
+                self.assertIsNotNone(icon.get_file())
+                filename = icon.get_file().get_path()
+                self.assertIsNotNone(filename)
+                path = Path(filename).resolve()
+                self.assertTrue(path.is_relative_to(icons), str(path))
+                self.assertEqual(path.name, f"{tool.icon_name}.svg")
+
+                # The native placement cursor also loads the resolved SVG file.
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(str(path), 16, 16, True)
+                self.assertEqual((pixbuf.get_width(), pixbuf.get_height()), (16, 16))
+                self.assertTrue(pixbuf.get_has_alpha())
+                pixels = pixbuf.get_pixels()
+                width = pixbuf.get_width() * pixbuf.get_n_channels()
+                stride = pixbuf.get_rowstride()
+                image = b"".join(pixels[row * stride:row * stride + width]
+                                 for row in range(pixbuf.get_height()))
+                self.assertTrue(any(image[pixbuf.get_n_channels() - 1::pixbuf.get_n_channels()]),
+                                "The palette icon must contain visible pixels")
+                self.assertNotIn(image, rendered,
+                                 f"{tool.id} renders the same icon as {rendered.get(image)}")
+                rendered[image] = tool.id
+
+    def test_toolbox_symbolic_render_preserves_outlines_and_markers(self):
+        tools = [tool for section in BPMNLanguage().toolbox_definition for tool in section.tools
+                 if tool.id.startswith("bpmn-")]
+        theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
+        output = Path(os.environ["GAPHOR_BPMN_TEST_OUTPUT"]) / "palette-symbolic"
+        renderer = Gsk.CairoRenderer.new()
+        self.assertTrue(renderer.realize(None))
+        try:
+            for mode, component in (("light", 32), ("dark", 245)):
+                color = Gdk.RGBA()
+                color.parse(f"rgb({component},{component},{component})")
+                for size in (16, 32):
+                    images = {}
+                    for tool in tools:
+                        icon = theme.lookup_icon(tool.icon_name, [], size, 1,
+                                                 Gtk.TextDirection.LTR,
+                                                 Gtk.IconLookupFlags.FORCE_SYMBOLIC)
+                        snapshot = Gtk.Snapshot.new()
+                        icon.snapshot_symbolic(snapshot, size, size, [color] * 4)
+                        viewport = Graphene.Rect()
+                        viewport.init(0, 0, size, size)
+                        texture = renderer.render_texture(snapshot.to_node(), viewport)
+                        filename = output / mode / str(size) / f"{tool.id}.png"
+                        filename.parent.mkdir(parents=True, exist_ok=True)
+                        self.assertTrue(texture.save_to_png(str(filename)))
+                        pixbuf = GdkPixbuf.Pixbuf.new_from_file(str(filename))
+                        pixels = pixbuf.get_pixels()
+                        stride = pixbuf.get_rowstride()
+                        image = b"".join(pixels[row * stride:row * stride + size * 4]
+                                         for row in range(size))
+                        images[tool.id] = image
+                        # Exercise GTK's symbolic recoloring, not plain SVG decoding.
+                        strongest = max(range(size * size), key=lambda index: image[index * 4 + 3])
+                        with self.subTest(mode=mode, size=size, tool=tool.id):
+                            self.assertGreater(image[strongest * 4 + 3], 128, tool.id)
+                            for channel in image[strongest * 4:strongest * 4 + 3]:
+                                self.assertAlmostEqual(channel, component, delta=3, msg=tool.id)
+
+                    def alpha(tool_id, x, y):
+                        return images[tool_id][(y * size + x) * 4 + 3]
+
+                    with self.subTest(mode=mode, size=size):
+                        # Version 0.1.2 loses SVG fill="none" in GTK's symbolic
+                        # mask and paints these centres solid despite a valid SVG.
+                        for tool_id in ("bpmn-task", "bpmn-start", "bpmn-intermediate", "bpmn-end"):
+                            self.assertEqual(alpha(tool_id, size // 2, size // 2), 0, tool_id)
+                        if "bpmn-exclusive-unmarked" in images:
+                            self.assertEqual(alpha("bpmn-exclusive-unmarked", size // 2, size // 2), 0)
+                        self.assertGreater(alpha("bpmn-exclusive", size // 2, size // 2), 128)
+                        self.assertGreater(alpha("bpmn-parallel", size // 2, size // 2), 128)
+                        self.assertNotEqual(images["bpmn-exclusive"], images["bpmn-parallel"])
+                        self.assertEqual(len(set(images.values())), len(images))
+                        # A horizontal diameter crosses two rings four times.
+                        if size == 32:
+                            for tool_id, crossings in (("bpmn-start", 2), ("bpmn-intermediate", 4),
+                                                        ("bpmn-end", 2)):
+                                inside, runs = False, 0
+                                for x in range(size):
+                                    painted = alpha(tool_id, x, size // 2) >= 128
+                                    runs += painted and not inside
+                                    inside = painted
+                                self.assertEqual(runs, crossings, tool_id)
+        finally:
+            renderer.unrealize()
+
+    def test_unmarked_gateway_tool_keeps_exclusive_semantics(self):
+        marked = self.tool("bpmn-exclusive")
+        unmarked = self.tool("bpmn-exclusive-unmarked")
+        self.assertTrue(marked.isMarkerVisible)
+        self.assertFalse(unmarked.isMarkerVisible)
+        self.assertEqual(marked.subject.gatewayKind, "EXCLUSIVE")
+        self.assertEqual(unmarked.subject.gatewayKind, "EXCLUSIVE")
+        self.assertIs(unmarked.subject.container, self.proc)
+
+    def test_gateway_marker_drawing_changes_only_exclusive_views(self):
+        gateway = self.tool("bpmn-exclusive")
+        output = Path(os.environ["GAPHOR_BPMN_TEST_OUTPUT"])
+        with Transaction(self.events):
+            sheet = self.factory.style_sheet or self.factory.create(StyleSheet)
+            sheet.styleSheet = "diagram { background-color: white; color: black; }"
+
+        def raster(name):
+            self.diagram.update(list(self.diagram.get_all_items()))
+            filename = output / f"gateway-marker-{name}.png"
+            save_png(str(filename), self.diagram)
+            return bytes(GdkPixbuf.Pixbuf.new_from_file(str(filename)).get_pixels())
+
+        marked = raster("exclusive-marked")
+        with Transaction(self.events):
+            gateway.isMarkerVisible = False
+        unmarked = raster("exclusive-unmarked")
+        self.assertNotEqual(marked, unmarked)
+        self.assertEqual(gateway.subject.gatewayKind, "EXCLUSIVE")
+        with Transaction(self.events):
+            gateway.subject.gatewayKind = "PARALLEL"
+        parallel = raster("parallel-flag-false")
+        with Transaction(self.events):
+            gateway.isMarkerVisible = True
+        self.assertEqual(parallel, raster("parallel-flag-true"))
+        self.assertNotEqual(parallel, unmarked)
+
+    def test_gateway_marker_views_undo_roundtrip_and_copy(self):
+        unmarked = self.tool("bpmn-exclusive-unmarked")
+        with Transaction(self.events):
+            marked = self.diagram.create(view.BPMNGatewayItem, subject=unmarked.subject)
+        self.assertTrue(marked.isMarkerVisible)
+        self.undo.clear_undo_stack()
+        with Transaction(self.events):
+            unmarked.isMarkerVisible = True
+        self.undo.undo_transaction()
+        self.assertFalse(unmarked.isMarkerVisible)
+        self.assertTrue(marked.isMarkerVisible)
+        self.undo.redo_transaction()
+        self.assertTrue(unmarked.isMarkerVisible)
+        self.undo.undo_transaction()
+
+        data = copy_full([unmarked], self.factory.lookup)
+        with Transaction(self.events):
+            linked = next(item for item in paste_link(data, self.diagram)
+                          if isinstance(item, view.BPMNGatewayItem))
+            copied = next(item for item in paste_full(data, self.diagram)
+                          if isinstance(item, view.BPMNGatewayItem))
+        self.assertIs(linked.subject, unmarked.subject)
+        self.assertIsNot(copied.subject, unmarked.subject)
+        self.assertEqual(copied.subject.gatewayKind, "EXCLUSIVE")
+        self.assertFalse(linked.isMarkerVisible)
+        self.assertFalse(copied.isMarkerVisible)
+        with Transaction(self.events):
+            linked.isMarkerVisible = True
+        self.assertFalse(unmarked.isMarkerVisible)
+        self.assertTrue(marked.isMarkerVisible)
+
+        stream = io.StringIO()
+        save(stream, self.factory)
+        other = ElementFactory()
+        try:
+            load(io.StringIO(stream.getvalue()), other, self.language)
+            self.assertFalse(other.lookup(unmarked.id).isMarkerVisible)
+            self.assertTrue(other.lookup(marked.id).isMarkerVisible)
+            self.assertTrue(other.lookup(linked.id).isMarkerVisible)
+            self.assertFalse(other.lookup(copied.id).isMarkerVisible)
+            self.assertIs(other.lookup(unmarked.id).subject, other.lookup(marked.id).subject)
+            self.assertEqual(other.lookup(unmarked.id).subject.gatewayKind, "EXCLUSIVE")
+        finally:
+            other.shutdown()
+
+        # Models saved before this visual option have no presentation property.
+        legacy = ElementTree.fromstring(stream.getvalue())
+        removed = 0
+        for element in legacy.iter():
+            for attribute in list(element):
+                if attribute.tag.rsplit("}", 1)[-1] == "isMarkerVisible":
+                    element.remove(attribute)
+                    removed += 1
+        self.assertGreater(removed, 0)
+        if legacy.tag.startswith("{"):
+            ElementTree.register_namespace("", legacy.tag[1:].split("}", 1)[0])
+        other = ElementFactory()
+        try:
+            load(io.StringIO(ElementTree.tostring(legacy, encoding="unicode")), other, self.language)
+            self.assertTrue(other.lookup(unmarked.id).isMarkerVisible)
+            self.assertTrue(other.lookup(marked.id).isMarkerVisible)
+            self.assertEqual(other.lookup(unmarked.id).subject.gatewayKind, "EXCLUSIVE")
+        finally:
+            other.shutdown()
 
     def packaged_layout(self):
         with Transaction(self.events):

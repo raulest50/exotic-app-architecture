@@ -5,11 +5,11 @@ source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)/common.sh"
 EXTRA_COMPOSE_FILES=("$DEPLOYMENT_DIR/compose.pilot.yaml")
 
 usage() {
-    printf 'Uso: bash scripts/pilot.sh <validate|database|web|up|status|stop|down> <staging.env|production.env>\n'
+    printf 'Uso: bash scripts/pilot.sh <validate|database|web|up|redeploy-backend|status|stop|down> <staging.env|production.env>\n'
 }
 [[ $# -eq 2 ]] || { usage >&2; exit 2; }
 action=$1
-case "$action" in validate|database|web|up|status|stop|down) ;; *) usage >&2; exit 2 ;; esac
+case "$action" in validate|database|web|up|redeploy-backend|status|stop|down) ;; *) usage >&2; exit 2 ;; esac
 load_environment "$2"
 
 # Check the effective model, including the override, before every operation.
@@ -21,7 +21,7 @@ for name in ("database","backend","web"):
         raise SystemExit("Solo el proyecto edge puede publicar puertos loopback; las aplicaciones no publican puertos.")
 '
 
-case "$action" in database|web|up|stop|down) acquire_operation_lock ;; esac
+case "$action" in database|web|up|redeploy-backend|stop|down) acquire_operation_lock ;; esac
 case "$action" in
     validate) validate_runtime_inputs private-pilot ;;
     database|web)
@@ -30,7 +30,7 @@ case "$action" in
         service=$action
         dc up -d --no-deps --wait --wait-timeout 240 "$service"
         ;;
-    up)
+    up|redeploy-backend)
         validate_runtime_inputs private-pilot
         require_prepared
         bootstrap_record="$(dirname -- "$ENV_FILE")/bootstrap.complete.json"
@@ -47,7 +47,12 @@ if record.get("backend_image_id")!=sys.argv[4] or len(record.get("source_dump_sh
     raise SystemExit("La aprobacion debe corresponder a esta imagen y a una copia identificada por SHA256.")
 ' "$bootstrap_record" "$DB_NAME" "$ENVIRONMENT" "$(docker image inspect --format '{{.Id}}' "$BACKEND_IMAGE")"
         note 'Piloto privado: la compatibilidad de los dominios publicos sigue pendiente.'
-        dc up -d --wait --wait-timeout 900
+        if [[ "$action" == redeploy-backend ]]; then
+            note "Recreando solo backend de $PROJECT_NAME; las sesiones JWT anteriores dejaran de ser validas."
+            dc up -d --no-deps --force-recreate --wait --wait-timeout 900 backend
+        else
+            dc up -d --wait --wait-timeout 900
+        fi
         ;;
     status) dc ps --all ;;
     stop) dc stop ;;

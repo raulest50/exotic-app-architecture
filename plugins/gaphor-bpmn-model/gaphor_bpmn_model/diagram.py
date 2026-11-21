@@ -25,7 +25,7 @@ from .model import (
     BPMNFlowNode, BPMNTask, BPMNSubProcess, BPMNEvent, BPMNGateway,
     BPMNSequenceFlow, BPMNMessageFlow, BPMNAssociation, BPMNTextAnnotation,
     BPMNDiagram, can_connect, collaboration, participant, process, scope,
-    deletion_dependencies,
+    deletion_dependencies, boolean,
 )
 from .validation import ModelError
 
@@ -108,10 +108,11 @@ class BPMNShape:
             if value.gatewayKind == "PARALLEL":
                 cr.move_to(cx - r, cy); cr.line_to(cx + r, cy)
                 cr.move_to(cx, cy - r); cr.line_to(cx, cy + r)
-            else:
+                _paint(context, width=3)
+            elif self.item.isMarkerVisible:
                 cr.move_to(cx - r, cy - r); cr.line_to(cx + r, cy + r)
                 cr.move_to(cx - r, cy + r); cr.line_to(cx + r, cy - r)
-            _paint(context, width=3)
+                _paint(context, width=3)
             self.label.draw(context, Rectangle(x - 55, y + h + 6, w + 110, 44))
         elif isinstance(value, (BPMNParticipant, BPMNLane)):
             cr.rectangle(x, y, w, h)
@@ -241,8 +242,11 @@ class BPMNEventItem(BPMNElementItem):
 
 @represents(BPMNGateway)
 class BPMNGatewayItem(BPMNElementItem):
+    isMarkerVisible = boolean("isMarkerVisible", default=True)
+
     def __init__(self, diagram, id=None):
         super().__init__(diagram, id=id, width=54, height=54)
+        self.watch("isMarkerVisible", self.update_shapes)
         for handle in self.handles():
             handle.movable = False
         self.outline_ports([(27, 0), (54, 27), (27, 54), (0, 27)])

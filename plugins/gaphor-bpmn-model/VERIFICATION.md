@@ -1,5 +1,118 @@
 # Verificación de BPMN
 
+## Actualización 0.1.3: render simbólico y rombo vacío
+
+El 20 de noviembre de 2026, una captura del usuario reveló un defecto que las
+comprobaciones de 0.1.2 no detectaban: GTK renderizaba los iconos simbólicos
+como figuras sólidas y perdía sus contornos y marcadores. Decodificar el SVG
+con GdkPixbuf y resolver su nombre en el tema no bastaba para verificar cómo
+se mostraba en la paleta. La evidencia de 0.1.2 se conserva debajo con ese
+alcance limitado.
+
+Se sustituyeron los trazos por contornos cerrados con huecos reales. La prueba
+visual utiliza ahora `Gtk.IconPaintable.snapshot_symbolic`, `Gtk.Snapshot` y
+`Gsk.CairoRenderer.render_texture`: la misma ruta simbólica que produce el
+defecto. Se renderizaron e inspeccionaron los 15 iconos a 16, 24 y 32 píxeles,
+con colores de primer plano claros y oscuros aplicados por GTK. Las imágenes
+anteriores y corregidas están en las carpetas `original-0.1.2` y `fixed-0.1.3`
+de `temp/bpmn-palette-fix-20261120/grace` en el workspace.
+
+La prueba de regresión detecta el relleno de los iconos anteriores, sin depender
+del número de herramientas. Su ejecución aislada contra 0.1.2 terminó con los
+fallos de aserción esperados; la comprobación negativa terminó con `PASS` en
+`temp/bpmn-palette-fix-20261120/negative-original/result.txt`.
+
+La paleta añade **Compuerta exclusiva sin marcador**. Comparte el tipo exclusivo
+con la herramienta con X. El indicador `isMarkerVisible` pertenece a cada figura
+`BPMNGatewayItem`, con valor predeterminado `True` para conservar el aspecto de
+los modelos anteriores. El panel permite cambiar **Mostrar X en esta vista**;
+la compuerta paralela conserva siempre su +. No cambian los tipos semánticos
+ni las reglas de conexión o validación de flujos.
+
+**105 pruebas aprobadas**: 48 de modelo y operaciones, 36 de diagramas y 21
+del editor y servicio. Incluyen render simbólico real, huecos, marcadores,
+recoloreado, imágenes distintas, creación del rombo vacío, dibujo, vistas
+independientes, copia completa y por vínculo, undo/redo, guardado/reapertura,
+lectura de modelos sin la nueva propiedad y checkbox con sensibilidad según
+el tipo de compuerta. La integración con los cuatro plugins en dos sesiones
+también terminó con `PASS`.
+
+Se repitieron las 105 pruebas y la integración sobre el wheel 0.1.3 instalado
+en una carpeta temporal, con el mismo resultado.
+
+Evidencia desde fuentes:
+`C:\Users\hardp\AppData\Local\Temp\gaphor-bpmn-tests-af6ca2ea-cb5d-4620-8103-09e94ea74a4b`.
+
+Evidencia del wheel temporal:
+`C:\Users\hardp\AppData\Local\Temp\gaphor-bpmn-tests-b4f2ee6c-c913-44f6-ad5b-158ccdc566a7`.
+
+La comprobación corresponde a Windows y Gaphor 3.3.2, sin ventanas visibles
+ni modelos del usuario como archivos de prueba. Los atlas muestran el render
+simbólico real de GTK, aunque no son capturas del escritorio del usuario.
+
+Se instaló 0.1.3 en `C:\Users\hardp\.local\gaphor\plugins-2`, respaldando
+0.1.2 en `temp/bpmn-palette-fix-20261120/backup-0.1.2` del workspace. Los ocho
+módulos y los 15 SVG instalados coinciden por SHA-256 con las fuentes, los 50
+archivos de los otros plugins conservan sus huellas y existe una única
+distribución BPMN, versión 0.1.3.
+
+Un proceso nuevo de Gaphor verificó el descubrimiento nativo, el render
+simbólico de los 15 iconos instalados, sus centros transparentes, los botones
+y cursores nativos, las tres herramientas de compuerta y el control del marcador
+por vista. Resultado: `PASS`, sin inyectar fuentes ni abrir ventanas visibles.
+Evidencia: `temp/bpmn-palette-fix-20261120/native-installed-report.txt` del
+workspace. Las ventanas abiertas antes de actualizar requieren reinicio.
+
+## Actualización 0.1.2: iconos de la paleta
+
+El 20 de noviembre de 2026 se incorporaron 14 SVG simbólicos propios para las
+herramientas BPMN. El lenguaje registra su directorio en `Gtk.IconTheme` al
+consultar la paleta, sin duplicar rutas al repetir la consulta en varias
+instancias. Los recursos se incluyen explícitamente en el paquete y sus nombres
+tienen el prefijo `exotic-bpmn-`.
+
+**100 pruebas aprobadas**: 48 de modelo y operaciones, 32 de diagramas y 20
+del editor y servicio. La nueva prueba resuelve cada icono con GTK, comprueba
+que procede del paquete, lo decodifica con GdkPixbuf a 16 píxeles y verifica
+que las 14 imágenes son visibles y diferentes. También verifica el registro
+idempotente al consultar la paleta desde dos instancias del lenguaje.
+
+La integración con los cuatro plugins del repositorio en dos sesiones terminó
+con `PASS`. Se repitieron las 100 pruebas y la integración sobre el wheel
+0.1.2 instalado en una carpeta temporal, con el mismo resultado.
+
+Evidencia desde la copia temporal de fuentes:
+`C:\Users\hardp\AppData\Local\Temp\gaphor-bpmn-tests-670ab474-c322-4308-b410-53b79e42444b`.
+
+Evidencia del wheel instalado temporalmente:
+`C:\Users\hardp\AppData\Local\Temp\gaphor-bpmn-tests-1da958a0-ff84-4a8c-990a-c75a324e2a59`.
+
+Se inspeccionaron atlas claros y oscuros a 16, 24 y 32 píxeles. Estos atlas
+permiten revisar las geometrías; no son capturas de la aplicación del usuario.
+La prueba de GTK acredita la resolución de los recursos también usados por
+los iconos de arrastre y el cursor de creación. No se añadieron dependencias
+ni se modificaron tipos, reglas o figuras del diagrama.
+
+Esta verificación corresponde a Windows y Gaphor 3.3.2. Se utilizaron modelos
+temporales y ventanas de prueba ocultas. `ExoticApp.gaphor` conservó su SHA-256:
+`C60F56C01EE2B01143D40B37F36B30BB70F754E7C0476ABA0820A73F3B8497B0`.
+
+Se instaló 0.1.2 en `C:\Users\hardp\.local\gaphor\plugins-2`, conservando una
+copia de 0.1.1 en
+`C:\Users\hardp\Desktop\exotic_ws\temp\bpmn-palette-icons-20261120\backup-0.1.1`.
+Los ocho módulos Python y los 14 SVG instalados coinciden por SHA-256 con las
+fuentes. Los 50 archivos de los otros plugins conservan sus huellas y existe
+una única distribución BPMN, versión 0.1.2.
+
+Un proceso nuevo de Gaphor comprobó el descubrimiento nativo del lenguaje, la
+resolución de los 14 iconos instalados y la construcción de los botones y
+cursores nativos. Resultado: `PASS`, sin inyectar fuentes, modificar el cargador,
+presentar ventanas, abrir modelos del usuario ni escribir sus preferencias.
+Evidencia:
+`C:\Users\hardp\Desktop\exotic_ws\temp\bpmn-palette-icons-20261120\native-installed-report.txt`.
+Las ventanas de Gaphor que ya estaban abiertas necesitan reiniciarse para
+cargar esta actualización; no se cerraron durante la comprobación.
+
 ## Actualización 0.1.1: organización en paquetes
 
 El 4 de noviembre de 2026 se añadió organización de colaboraciones dentro de

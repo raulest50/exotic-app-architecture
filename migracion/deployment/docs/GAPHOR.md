@@ -279,3 +279,43 @@ almacenamiento por base; las plantillas son
 contratos originales del backend ni limites. El acceso IP comparte origen y
 no se debe modelar como frontera de seguridad entre ambientes. Se conservan
 los cuatro nombres y SSH. Pendiente sincronizacion manual de estas notas.
+
+## Actualizacion local del 17 de noviembre: clave JWT por arranque
+
+Se consulto el diagrama guardado `deployment migracion`, sus agrupaciones y
+las notas de los backends de produccion y staging. La vista mantiene un
+backend por entorno y permite actualizar un servicio sin reiniciar los otros.
+Los identificadores de los backends son
+`1771e4a5-d894-11f1-823c-bc09b9551b3f` y
+`17761b45-d894-11f1-909b-bc09b9551b3f`, respectivamente. Sus notas describen
+secretos montados desde archivos privados sin especificar el ciclo de vida
+JWT. No se modifico el archivo `ExoticApp.gaphor`.
+
+Los manifiestos locales y la revision correspondiente del backend retiran la
+dependencia de un archivo JWT. El backend genera la clave criptograficamente
+al arrancar y la conserva solo en memoria; cada nuevo arranque invalida los
+JWT anteriores. Esto no implica que ya se haya actualizado la VM ni modifica
+la evidencia historica del despliegue anterior.
+
+**Pendiente de sincronizacion manual con Gaphor:**
+
+1. En las notas de ambos backends de `deployment migracion`, distinguir los
+   secretos de configuracion montados (DB y `backend.properties`) de la clave
+   JWT generada al arrancar y conservada solo en memoria. Indicar un backend
+   activo por entorno y nuevo inicio de sesion despues de reemplazarlo.
+2. Registrar en esas notas la operacion explicita `redeploy-backend`: recrea
+   solo backend, incluso usando la misma imagen, sin recrear database o web.
+   `up` sigue siendo idempotente. No agregar servidores, volumenes JWT,
+   servicios de claves ni artefactos de build para este mecanismo.
+3. Si se describe JWT en la vista `Despliegue` de Render, aplicar la misma
+   distincion despues de desplegar y verificar la revision correspondiente;
+   conservar la separacion de produccion y staging. No convertir la propuesta
+   local en evidencia de estado remoto.
+
+Las rutas existentes afectadas son `migracion/deployment/compose.yaml`,
+`scripts/common.sh`, `scripts/stack.sh`, `scripts/pilot.sh`,
+`env/staging.env.example`, `env/production.env.example`, `README.md` y
+`docs/COMPATIBILIDAD.md`, dentro de este mismo directorio de despliegue.
+El codigo del mecanismo esta en
+`exotic-app-backend/src/main/java/exotic/app/planta/security/JwtTokenProvider.java`.
+No se crean, eliminan ni mueven archivos persistentes con este cambio.

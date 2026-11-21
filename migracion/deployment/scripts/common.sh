@@ -75,7 +75,7 @@ load_environment() {
     PROJECT_NAME="exotic-$ENVIRONMENT"
     [[ "$(json_get name)" == "$PROJECT_NAME" ]] || die 'El nombre del proyecto Compose no coincide con el entorno.'
     for variable in DB_NAME DB_USER BACKEND_IMAGE FRONTEND_DIST_DIR \
-        POSTGRES_ADMIN_PASSWORD_FILE DB_PASSWORD_FILE JWT_SECRET_FILE \
+        POSTGRES_ADMIN_PASSWORD_FILE DB_PASSWORD_FILE \
         BACKEND_PROPERTIES_FILE PUBLIC_DOMAIN API_PUBLIC_DOMAIN \
         APP_COMPATIBILITY_CONFIRMED CADDY_IMAGE BACKUP_REMOTE_URI; do
         value=$(metadata "$variable")
@@ -174,10 +174,9 @@ validate_runtime_inputs() {
     [[ -d "$FRONTEND_DIST_DIR" && -r "$FRONTEND_DIST_DIR/index.html" && -s "$FRONTEND_DIST_DIR/index.html" ]] || die 'FRONTEND_DIST_DIR debe contener un index.html legible y no vacio.'
     validate_private_file "$POSTGRES_ADMIN_PASSWORD_FILE" POSTGRES_ADMIN_PASSWORD_FILE
     validate_private_file "$DB_PASSWORD_FILE" DB_PASSWORD_FILE
-    validate_private_file "$JWT_SECRET_FILE" JWT_SECRET_FILE
     validate_private_file "$BACKEND_PROPERTIES_FILE" BACKEND_PROPERTIES_FILE
     local backend_secret
-    for backend_secret in "$DB_PASSWORD_FILE" "$JWT_SECRET_FILE" "$BACKEND_PROPERTIES_FILE"; do
+    for backend_secret in "$DB_PASSWORD_FILE" "$BACKEND_PROPERTIES_FILE"; do
         [[ "$(stat -Lc '%u' -- "$backend_secret")" == 1000 ]] || die 'Los secretos montados en backend deben pertenecer al UID 1000; no ampliar sus permisos.'
     done
     [[ "$(realpath -e -- "$POSTGRES_ADMIN_PASSWORD_FILE")" != "$(realpath -e -- "$DB_PASSWORD_FILE")" ]] || die 'Las claves de administrador PostgreSQL y aplicacion deben usar archivos distintos.'

@@ -1,4 +1,4 @@
-# Diagramas de procesos BPMN 0.1.1
+# Diagramas de procesos BPMN 0.1.3
 
 Plugin independiente para **Gaphor 3.3.2**, orientado al modelado descriptivo de
 procesos mediante un subconjunto de BPMN 2.0.2. Añade el lenguaje **BPMN**, sus
@@ -6,6 +6,13 @@ herramientas, figuras, relaciones persistentes y propiedades.
 
 No es un motor de procesos y no afirma conformidad completa con BPMN. Esta
 versión guarda archivos `.gaphor`; no importa ni exporta XML `.bpmn`.
+
+La versión 0.1.3 corrige los iconos simbólicos de la paleta: los contornos y
+marcadores se conservan al renderizarlos con GTK. Hay 15 herramientas BPMN,
+incluidas las dos representaciones de la compuerta exclusiva, con X o con
+rombo vacío. La paleta, el icono de arrastre y el cursor de creación utilizan
+los mismos recursos.
+Reinicia Gaphor después de actualizar el plugin para cargar los nuevos iconos.
 
 La versión 0.1.1 permite organizar una colaboración BPMN dentro de un paquete
 UML. El diagrama puede pertenecer al paquete del proceso y los elementos a su
@@ -60,6 +67,22 @@ F2 conserva la edición nativa del nombre. El doble clic del plugin Propiedades
 sigue disponible. El campo **Documentación BPMN** es propio del nuevo lenguaje;
 la Descripción y Nota del editor existente conservan sus campos independientes.
 
+### Compuerta exclusiva con X o sin marcador
+
+La paleta ofrece **Compuerta exclusiva con X**, **Compuerta exclusiva sin
+marcador** y **Compuerta paralela**. Las dos primeras crean el mismo tipo de
+compuerta exclusiva; cambia únicamente su representación.
+
+Al seleccionar una figura de compuerta, el panel lateral permite activar o
+desactivar **Mostrar X en esta vista**. La opción pertenece a esa figura, de
+modo que otra vista del mismo elemento puede tener una representación distinta.
+La compuerta paralela siempre muestra su signo +. Conviene mantener un criterio
+uniforme para las compuertas exclusivas de cada diagrama.
+
+Los modelos anteriores conservan la X de sus compuertas exclusivas. Guarda los
+modelos que utilicen esta nueva opción con el plugin 0.1.3 o posterior: una
+versión anterior puede perder la opción de representación al volver a guardar.
+
 ## Elementos y propiedades
 
 | Elemento | Alcance |
@@ -69,7 +92,7 @@ la Descripción y Nota del editor existente conservan sus campos independientes.
 | Evento de fin | Ninguno y mensaje de envío |
 | Tarea | Tarea genérica con nombre y documentación |
 | Subproceso | Integrado, colapsado, con marcador «+»; no se ofrece editor de descomposición interna |
-| Compuerta | Exclusiva XOR y paralela AND |
+| Compuerta | Exclusiva XOR con o sin X, y paralela AND |
 | Pool | Participante expandido con proceso; participante cerrado sin trabajo interno visible |
 | Carril | Un nivel dentro del proceso; asignación adicional de los nodos |
 | Secuencia | Ordinaria, condicional con expresión descriptiva y predeterminada |

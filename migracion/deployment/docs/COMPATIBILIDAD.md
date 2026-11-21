@@ -1,5 +1,11 @@
 # Compatibilidad de Exotic: cambios aplicados y verificaciones pendientes
 
+Actualizacion local del **17 de noviembre de 2026**: la nueva revision del
+backend genera la clave JWT en memoria al arrancar. Los manifiestos y scripts
+dejan de requerir un secreto JWT privado. No se ha desplegado este cambio en
+la VM ni se ha modificado su configuracion privada; la evidencia del 5 de
+noviembre que sigue corresponde al mecanismo anterior.
+
 Revision inicial: **4 de noviembre de 2026**; actualizada el **5 de noviembre**.
 Ambos entornos ya estan activos en la VM. Se implementaron seleccion explicita
 de API/entorno en frontend y CORS configurable en backend para los cuatro
@@ -104,8 +110,8 @@ en [Spring Boot 3.2.5: ejecución detrás de un proxy](https://docs.spring.io/sp
 ## Configuración externa y secretos
 
 Spring Boot es **3.2.5** y Java **21** según el repositorio. Revisar las
-propiedades requeridas por la revisión exacta del backend; DB y JWT no son
-necesariamente su única configuración. Las integraciones de correo, servicios
+propiedades requeridas por la revisión exacta del backend; la base de datos no
+es necesariamente su única configuración externa. Las integraciones de correo, servicios
 externos y almacenamiento deben inventariarse por nombre de propiedad, sin
 recuperar sus valores de los archivos privados locales.
 
@@ -114,7 +120,7 @@ recuperar sus valores de los archivos privados locales.
 | Servidor PostgreSQL | `DB_HOST=database`, `DB_PORT=5432` | Resolución dentro de la red del entorno; sin publicar PostgreSQL a Internet. |
 | Base y usuario de aplicación | `DB_NAME`, `DB_USER` | Coincidir con base, rol y privilegios restaurados de ese entorno; no usar el usuario administrador para el backend. |
 | Contraseña de aplicación | Archivo secreto montado como `/run/secrets/DB_PASSWORD` | El nombre del archivo expone la propiedad `DB_PASSWORD` mediante `configtree`; coincidir con la contraseña del rol PostgreSQL. |
-| Secreto JWT | Archivo secreto montado como `/run/secrets/jwt.secret` | Exponer `jwt.secret` mediante `configtree`; no aceptar el valor por defecto del código. |
+| Clave JWT | Solo memoria del backend, generada al arrancar | No requiere archivo, variable de entorno ni valor por defecto; cada arranque invalida los JWT anteriores. Un backend activo por entorno. |
 | Otras propiedades privadas | `/run/secrets/backend.properties` | Archivo nuevo preparado por el operador para cada entorno e importado explícitamente; fuera del repositorio. |
 
 El contrato de importación es
@@ -125,14 +131,36 @@ interpretar sus pares clave-valor. En esta propuesta las ubicaciones son
 obligatorias: si faltan, no deben ocultarse con `optional:`. Véase
 [Spring Boot 3.2.5: importación y árboles de configuración](https://docs.spring.io/spring-boot/docs/3.2.5/reference/html/features.html#features.external-config.files.configtree).
 
-Los secretos se suministran como archivos y Compose concede acceso solo a los
+Los secretos de configuracion restantes se suministran como archivos y Compose concede acceso solo a los
 servicios declarados. Esto **no cifra los archivos del host**: requieren permisos
 y custodia adecuados. No incluirlos en el repositorio, en un `.env` versionado,
 en una imagen o en una salida de diagnóstico. La entrega mediante archivos y
 la convención `_FILE` de algunas imágenes están descritas en
 [Docker Compose: secretos](https://docs.docker.com/compose/how-tos/use-secrets/).
-Esta documentación no contiene secretos. Los actuales se generaron en la VM
-durante la inicializacion anterior y no proceden de archivos privados locales.
+Esta documentación no contiene secretos. Durante la inicializacion anterior
+se generaron secretos en la VM, sin trasladar archivos privados locales; ese
+antecedente no acredita que la revision JWT nueva ya se haya desplegado.
+
+La revision nueva no lee `jwt.secret`, `JWT_SECRET` ni `JWT_SECRET_FILE`.
+Estos nombres pueden seguir presentes en configuracion privada antigua hasta
+su revision operativa; esta entrega no inspecciona ni elimina esos archivos.
+No quitar `configtree:` ni los secretos de PostgreSQL o `backend.properties`:
+siguen siendo necesarios y no cambian con la renovacion JWT.
+
+`stack.sh redeploy-backend` recrea solo el backend del entorno seleccionado,
+incluso cuando la imagen no cambia, y espera su comprobacion de vida. Conserva
+las validaciones y el bloqueo por entorno. En modo privado, la accion
+equivalente de `pilot.sh` mantiene ademas la aprobacion de esquema/documentos
+vinculada a la imagen. `up` sigue siendo idempotente y no promete renovar una
+clave cuando no reemplaza el backend. Una actualizacion solo del frontend
+tampoco inicia otra clave. Ver el procedimiento en [README.md](../README.md).
+
+El mismo mecanismo del backend se aplica localmente y en ambos entornos
+remotos, sin compartir claves entre ellos. Con DevTools, un reinicio del
+contexto tambien genera otra clave. No usar varias replicas activas con este
+mecanismo: requeririan una estrategia compartida diferente. Las pruebas de
+autenticacion entre arranques y entre entornos requieren ejecucion autorizada;
+no se presentan las comprobaciones historicas como evidencia de esta revision.
 
 ## Entorno de ejecución explícito
 

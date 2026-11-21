@@ -1,5 +1,11 @@
 # Despliegue de Exotic en la VM
 
+Actualizacion local del **17 de noviembre de 2026**: los manifiestos dejan de
+requerir un archivo JWT. La revision correspondiente del backend genera su
+clave en memoria al arrancar y se agrega `redeploy-backend` para recrear solo
+ese servicio. Estos cambios no se han aplicado ni comprobado en la VM; el
+estado operativo fechado que sigue conserva su evidencia historica.
+
 Estado al **5 de noviembre de 2026**: produccion y staging activos en la VM,
 inicializados desde una misma copia de Render produccion. Seis servicios
 saludables y proxy compartido operativo, siete contenedores en total. Acceso
@@ -111,13 +117,20 @@ La persistencia local comparte el riesgo del disco y de su política de borrado
 en Google Cloud. Los respaldos externos y su restauración son necesarios para
 recuperar la aplicación ante pérdida de esa infraestructura.
 
-Cada entorno requiere cuatro archivos privados, no sus valores en el `.env`:
+Cada entorno requiere tres archivos privados, no sus valores en el `.env`:
 
 1. Contraseña del administrador PostgreSQL.
 2. Contraseña diferente del rol de aplicación.
-3. Secreto JWT propio del entorno, con al menos 32 bytes y entropía suficiente.
-4. Un `backend.properties` externo con las restantes propiedades de negocio
+3. Un `backend.properties` externo con las restantes propiedades de negocio
    necesarias, confeccionado de forma segura por el operador.
+
+La clave JWT se genera criptograficamente en cada arranque del backend y se
+conserva solo en memoria. No se configura `JWT_SECRET_FILE`, `JWT_SECRET` ni
+`jwt.secret`. Cada entorno obtiene una clave independiente. Reiniciar el
+backend, recrearlo o volver a desplegarlo invalida los JWT anteriores; los
+usuarios deben iniciar sesion otra vez. Una actualizacion exclusiva del
+frontend no renueva esa clave. Este mecanismo requiere un unico backend
+activo por entorno; no habilitar replicas que firmen con claves distintas.
 
 No copiar aquí `application*.properties`, claves SSH o valores de Render. Los
 archivos privados deben ser legibles por la cuenta operadora y tener modo
@@ -126,12 +139,12 @@ estos archivos, sin cifrarlos por sí mismo. Proteger también el disco y los
 respaldos de configuración. No ejecutar scripts con `bash -x` ni publicar
 configuración expandida o salidas de diagnóstico con secretos.
 
-El backend importa los secretos mediante `configtree:` de Spring. La contraseña
-se ofrece como `DB_PASSWORD` y `spring.datasource.password`, y JWT como
-`jwt.secret`. Los parámetros de conexión, entorno y esquema se fijan en Compose.
+El backend importa los secretos de configuracion mediante `configtree:` de
+Spring. La contraseña se ofrece como `DB_PASSWORD` y
+`spring.datasource.password`. Los parámetros de conexión, entorno y esquema se fijan en Compose.
 El archivo extra no debe redefinir datasource, JWT, entorno o gestión de esquema.
 Flyway permanece habilitado y Hibernate en `validate`.
-El backend se ejecuta como UID/GID 1000. Sus tres secretos montados deben
+El backend se ejecuta como UID/GID 1000. Sus dos archivos privados montados deben
 pertenecer al UID 1000; sus documentos y logs deben permitirle escritura.
 `prepare.sh` inicializa la propiedad de los volumenes nuevos de documentos/logs;
 conserva los existentes. No ampliar permisos de secretos para corregir accesos.
@@ -243,8 +256,39 @@ bash scripts/backup.sh /srv/exotic/private/staging/staging.env /srv/exotic-backu
 
 La actualización consiste en seleccionar una imagen backend y un directorio
 `dist` de una versión revisada en el archivo privado y volver a ejecutar
-`stack.sh up`. No reconstruye en la VM ni borra datos. `stop` detiene servicios;
+`stack.sh up`. `up` conserva su comportamiento idempotente: si la imagen y la
+configuracion no cambiaron, puede mantener el backend actual y su clave JWT.
+No reconstruye en la VM ni borra datos. `stop` detiene servicios;
 `down` retira contenedores y redes internas conservando los volúmenes externos.
+
+Para un despliegue explicito que debe reemplazar el backend incluso con la
+misma imagen, usar `redeploy-backend` despues de preparar y revisar la imagen
+seleccionada. La operacion valida la configuracion, toma el bloqueo del
+entorno y ejecuta `up --no-deps --force-recreate --wait` exclusivamente para
+`backend`; no recrea PostgreSQL, web ni el otro entorno. No construye una
+imagen en la VM; conserva la politica de descarga de Compose y la referencia
+seleccionada debe corresponder a la version revisada para ese despliegue.
+
+```bash
+bash scripts/stack.sh redeploy-backend /srv/exotic/private/staging/staging.env
+```
+
+Si el entorno sigue en el modo privado documentado con
+`APP_COMPATIBILITY_CONFIRMED=false`, utilizar la misma accion en `pilot.sh`:
+
+```bash
+bash scripts/pilot.sh redeploy-backend /srv/exotic/private/staging/staging.env
+```
+
+El piloto conserva la comprobacion de `bootstrap.complete.json`, esquema,
+documentos e identidad de imagen antes de recrear backend. No cambiar la
+marca de compatibilidad para saltarse estas condiciones. Produccion usa su
+propia ruta `production.env`. Los comandos anteriores son procedimientos
+para una ventana autorizada, no evidencia de ejecucion en esta entrega.
+Habra una interrupcion durante el reemplazo del unico backend y se requerira
+iniciar sesion de nuevo. Un arranque fallido no hace que se recupere la clave
+anterior; la recuperacion usa otro arranque y otra clave. Antes de actualizar
+una imagen, revisar tambien sus posibles migraciones Flyway.
 
 El respaldo pausa temporalmente el backend, captura base y documentos, recupera
 su estado de ejecución y luego copia al destino externo configurado. No ejecuta
@@ -302,6 +346,7 @@ ni DNS publicos, y no se configuro el backup remoto.
 - [Docker: servicios Compose](https://docs.docker.com/reference/compose-file/services/).
 - [Docker: volúmenes](https://docs.docker.com/engine/storage/volumes/).
 - [Docker: secretos mediante archivos](https://docs.docker.com/compose/how-tos/use-secrets/).
+- [Docker: recreacion de un servicio con Compose](https://docs.docker.com/reference/cli/docker/compose/up/).
 - [Imagen oficial PostgreSQL, PGDATA y versión 18](https://hub.docker.com/_/postgres).
 - [Spring Boot 3.2.5, configuración externa](https://docs.spring.io/spring-boot/docs/3.2.5/reference/html/features.html#features.external-config.files.configtree).
 - [Caddy: patrones de SPA y proxy](https://caddyserver.com/docs/caddyfile/patterns).
@@ -310,5 +355,6 @@ La vista `deployment migracion` conserva el destino propuesto y `Despliegue`
 el origen Render; véase [GAPHOR.md](docs/GAPHOR.md). Los límites declarativos
 ya corresponden al presupuesto de esa vista. Queda pendiente registrar en el
 modelo el acceso por SSH, los cuatro nombres y artefactos publicos, CORS
-configurable y el estado real de los limites. No se edita el modelo como
+configurable, el estado real de los limites y el ciclo de vida JWT descrito
+en la actualizacion del 17 de noviembre. No se edita el modelo como
 consecuencia del despliegue.

@@ -1,6 +1,9 @@
 """BPMN language registration, toolbox factories and native diagram creation."""
 
+from importlib.resources import files
+
 from gaphas.item import SE
+from gi.repository import Gdk, Gtk
 from gaphor import UML
 from gaphor.abc import ModelingLanguage
 from gaphor.diagram.diagramtoolbox import DiagramType, ElementCreateInfo, ToolDef, ToolSection, new_item_factory
@@ -104,6 +107,19 @@ def element_factory(cls, item_cls, name, **attributes):
     return create
 
 
+def gateway_factory(is_marker_visible=True):
+    factory = element_factory(BPMNGateway, diagram.BPMNGatewayItem, "", gatewayKind="EXCLUSIVE")
+
+    def create(diagram_model, parent=None):
+        item = factory(diagram_model, parent)
+        item.isMarkerVisible = is_marker_visible
+        return item
+
+    create.item_class = factory.item_class
+    create.subject_class = factory.subject_class
+    return create
+
+
 def lane_factory(diagram_model, parent=None):
     lane = diagram_model.model.create(BPMNLane)
     lane.name = "Carril"
@@ -126,26 +142,33 @@ lane_factory.item_class = diagram.BPMNLaneItem
 lane_factory.subject_class = BPMNLane
 
 
-_package = "gaphor-package-symbolic"
-_node = "gaphor-class-symbolic"
-_line = "gaphor-association-symbolic"
+def register_icons():
+    """Extend the display's icon theme once, using Gaphor's native layout."""
+    display = Gdk.Display.get_default()
+    if display is None:
+        return
+    theme = Gtk.IconTheme.get_for_display(display)
+    path = str(files("gaphor_bpmn_model") / "icons")
+    if path not in theme.get_search_path():
+        theme.add_search_path(path)
 
 
 bpmn_tools = ToolSection("BPMN", (
-    ToolDef("bpmn-pool", "Pool abierto", _package, None, pool_factory(), SE),
-    ToolDef("bpmn-pool-closed", "Pool cerrado", _package, None, pool_factory(True), SE),
-    ToolDef("bpmn-lane", "Carril", _package, None, lane_factory, SE),
-    ToolDef("bpmn-task", "Tarea", _node, None, element_factory(BPMNTask, diagram.BPMNTaskItem, "Tarea"), SE),
-    ToolDef("bpmn-subprocess", "Subproceso colapsado", _node, None, element_factory(BPMNSubProcess, diagram.BPMNSubProcessItem, "Subproceso"), SE),
-    ToolDef("bpmn-start", "Evento de inicio", _node, None, element_factory(BPMNEvent, diagram.BPMNEventItem, "Inicio", eventKind="START", eventDefinition="NONE", eventDirection="CATCH"), -1),
-    ToolDef("bpmn-intermediate", "Evento intermedio", _node, None, element_factory(BPMNEvent, diagram.BPMNEventItem, "Evento", eventKind="INTERMEDIATE", eventDefinition="NONE", eventDirection="THROW"), -1),
-    ToolDef("bpmn-end", "Evento de fin", _node, None, element_factory(BPMNEvent, diagram.BPMNEventItem, "Fin", eventKind="END", eventDefinition="NONE", eventDirection="THROW"), -1),
-    ToolDef("bpmn-exclusive", "Compuerta exclusiva", _node, None, element_factory(BPMNGateway, diagram.BPMNGatewayItem, "", gatewayKind="EXCLUSIVE"), -1),
-    ToolDef("bpmn-parallel", "Compuerta paralela", _node, None, element_factory(BPMNGateway, diagram.BPMNGatewayItem, "", gatewayKind="PARALLEL"), -1),
-    ToolDef("bpmn-sequence", "Flujo de secuencia (origen → destino)", _line, None, new_item_factory(diagram.BPMNSequenceFlowItem), 0),
-    ToolDef("bpmn-message", "Flujo de mensaje (origen → destino)", _line, None, new_item_factory(diagram.BPMNMessageFlowItem), 0),
-    ToolDef("bpmn-association", "Asociación de anotación", _line, None, new_item_factory(diagram.BPMNAssociationItem), 0),
-    ToolDef("bpmn-annotation", "Anotación de texto", _node, None, element_factory(BPMNTextAnnotation, diagram.BPMNTextAnnotationItem, "", text="Anotación"), SE),
+    ToolDef("bpmn-pool", "Pool abierto", "exotic-bpmn-pool-symbolic", None, pool_factory(), SE),
+    ToolDef("bpmn-pool-closed", "Pool cerrado", "exotic-bpmn-pool-closed-symbolic", None, pool_factory(True), SE),
+    ToolDef("bpmn-lane", "Carril", "exotic-bpmn-lane-symbolic", None, lane_factory, SE),
+    ToolDef("bpmn-task", "Tarea", "exotic-bpmn-task-symbolic", None, element_factory(BPMNTask, diagram.BPMNTaskItem, "Tarea"), SE),
+    ToolDef("bpmn-subprocess", "Subproceso colapsado", "exotic-bpmn-subprocess-symbolic", None, element_factory(BPMNSubProcess, diagram.BPMNSubProcessItem, "Subproceso"), SE),
+    ToolDef("bpmn-start", "Evento de inicio", "exotic-bpmn-start-symbolic", None, element_factory(BPMNEvent, diagram.BPMNEventItem, "Inicio", eventKind="START", eventDefinition="NONE", eventDirection="CATCH"), -1),
+    ToolDef("bpmn-intermediate", "Evento intermedio", "exotic-bpmn-intermediate-symbolic", None, element_factory(BPMNEvent, diagram.BPMNEventItem, "Evento", eventKind="INTERMEDIATE", eventDefinition="NONE", eventDirection="THROW"), -1),
+    ToolDef("bpmn-end", "Evento de fin", "exotic-bpmn-end-symbolic", None, element_factory(BPMNEvent, diagram.BPMNEventItem, "Fin", eventKind="END", eventDefinition="NONE", eventDirection="THROW"), -1),
+    ToolDef("bpmn-exclusive", "Compuerta exclusiva con X", "exotic-bpmn-exclusive-symbolic", None, gateway_factory(), -1),
+    ToolDef("bpmn-exclusive-unmarked", "Compuerta exclusiva sin marcador", "exotic-bpmn-exclusive-unmarked-symbolic", None, gateway_factory(False), -1),
+    ToolDef("bpmn-parallel", "Compuerta paralela", "exotic-bpmn-parallel-symbolic", None, element_factory(BPMNGateway, diagram.BPMNGatewayItem, "", gatewayKind="PARALLEL"), -1),
+    ToolDef("bpmn-sequence", "Flujo de secuencia (origen → destino)", "exotic-bpmn-sequence-symbolic", None, new_item_factory(diagram.BPMNSequenceFlowItem), 0),
+    ToolDef("bpmn-message", "Flujo de mensaje (origen → destino)", "exotic-bpmn-message-symbolic", None, new_item_factory(diagram.BPMNMessageFlowItem), 0),
+    ToolDef("bpmn-association", "Asociación de anotación", "exotic-bpmn-association-symbolic", None, new_item_factory(diagram.BPMNAssociationItem), 0),
+    ToolDef("bpmn-annotation", "Anotación de texto", "exotic-bpmn-annotation-symbolic", None, element_factory(BPMNTextAnnotation, diagram.BPMNTextAnnotationItem, "", text="Anotación"), SE),
 ))
 
 
@@ -169,6 +192,7 @@ class BPMNLanguage(ModelingLanguage):
 
     @property
     def toolbox_definition(self):
+        register_icons()
         return (general_tools, bpmn_tools)
 
     @property

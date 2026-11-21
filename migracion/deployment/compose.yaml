@@ -14,7 +14,6 @@ x-deployment:
   IP_FRONTEND_HOST: "${IP_FRONTEND_HOST:-unconfigured-ip.invalid}"
   POSTGRES_ADMIN_PASSWORD_FILE: "${POSTGRES_ADMIN_PASSWORD_FILE:?Provide the private administrator password file}"
   DB_PASSWORD_FILE: "${DB_PASSWORD_FILE:?Provide the private application password file}"
-  JWT_SECRET_FILE: "${JWT_SECRET_FILE:?Provide the private JWT secret file}"
   BACKEND_PROPERTIES_FILE: "${BACKEND_PROPERTIES_FILE:?Provide the private extra properties file}"
   PUBLIC_DOMAIN: "${PUBLIC_DOMAIN:?Define the frontend hostname}"
   API_PUBLIC_DOMAIN: "${API_PUBLIC_DOMAIN:?Define the API hostname}"
@@ -123,7 +122,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${DB_NAME:?Define DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:?Define DB_USER}
       # The source's ${DB_PASSWORD} placeholder resolves from the config tree.
-      # Passwords and JWT material are files, never Compose interpolation values.
+      # Private configuration remains file-based; JWT keys exist only in backend memory.
       SPRING_CONFIG_IMPORT: file:/run/secrets/backend.properties,configtree:/run/secrets/
       SPRING_CONFIG_ADDITIONAL_LOCATION: optional:classpath:application-secrets.properties
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "${BACKEND_DB_POOL_SIZE:-10}"
@@ -137,8 +136,6 @@ services:
         target: DB_PASSWORD
       - source: database_password
         target: spring.datasource.password
-      - source: jwt_secret
-        target: jwt.secret
       - source: backend_properties
         target: backend.properties
     volumes:
@@ -266,7 +263,5 @@ secrets:
     file: ${POSTGRES_ADMIN_PASSWORD_FILE:?Provide the private administrator password file}
   database_password:
     file: ${DB_PASSWORD_FILE:?Provide the private application password file}
-  jwt_secret:
-    file: ${JWT_SECRET_FILE:?Provide the private JWT secret file}
   backend_properties:
     file: ${BACKEND_PROPERTIES_FILE:?Provide the private extra properties file}
